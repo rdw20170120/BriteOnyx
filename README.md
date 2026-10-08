@@ -1,2 +1,3 @@
 # BriteOnyx
-Bash scripting library supporting robust DevOps workflows
+
+Scripting framework supporting robust DevOps workflows
