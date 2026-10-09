@@ -1,0 +1,4 @@
+# ignore patterns for this project directory, and below
+# `fd` and `rg` respect `.ignore` files like this one
+
+/.waiting/

@@ -1,0 +1,17 @@
+# Ignore these:
+.DS_Store
+/tags
+
+# But don't ignore these:
+!*.bash
+!*.list
+!*.md
+!*.out
+!.gitignore
+!.ignore
+!/.mailmap
+
+# Yet still ignore these:
+*.bak
+.ran_*
+/tmp
