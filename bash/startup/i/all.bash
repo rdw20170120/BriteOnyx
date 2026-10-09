@@ -13,7 +13,6 @@ source $(dirname ${BASH_SOURCE})/fd.bash
 source $(dirname ${BASH_SOURCE})/ghostty.bash
 source $(dirname ${BASH_SOURCE})/git.bash
 source $(dirname ${BASH_SOURCE})/grep.bash
-source $(dirname ${BASH_SOURCE})/jump.bash
 source $(dirname ${BASH_SOURCE})/less.bash
 source $(dirname ${BASH_SOURCE})/ls.bash
 source $(dirname ${BASH_SOURCE})/nvim.bash

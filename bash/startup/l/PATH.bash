@@ -11,14 +11,16 @@ export boPathNative=${boPathOriginal}
 
 # Homebrew
 export boPathHomebrew=${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin
-# NO: I CANNOT safely use these without breaking macOS
+
+# NO: I CANNOT safely use CoreUtils without breaking macOS
 # export boPathCoreUtils=${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin
 # export boManCoreUtils=${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnuman
 
 # System portion of PATH
 # NOTE: Order matters!
 export boPathSystem=${boPathHomebrew}:${boPathNative}
-# NO: I CANNOT safely use these without breaking macOS
+
+# NO: I CANNOT safely use CoreUtils without breaking macOS
 # export boPathSystem=${boPathCoreUtils}:${boPathHomebrew}:${boPathNative}
 
 # Final PATH
@@ -33,8 +35,9 @@ export boManNative=${boManOriginal}
 
 # Final MANPATH
 MANPATH=${boManNative}
-# NOTE: GNU must be after macOS man pages, so both can be found by `man`
+# NO: I CANNOT safely use CoreUtils without breaking macOS
 # export boManCoreUtils=TODO
+# GNU must be after macOS man pages, so both can be found by `man`
 # MANPATH=${MANPATH}:${boManCoreUtils}
 export MANPATH
 

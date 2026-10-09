@@ -4,18 +4,6 @@
 set -EeTuo pipefail
 touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
 
-# I am using Ghostty as my terminal.
-# I have configured Ghostty
-# with "Solarized Dark Higher Contrast"
-# as my color theme.
-# Ghostty imports its color themes
-# from iTerm2.
-#
-# Ghostty exports COLORTERM=truecolor
-
-# REF: https://ghostty.org/docs/features/theme
-# REF: https://iterm2colorschemes.com/
-
 # shellcheck disable=SC2154
 if [[ "${boOS}" = macOS ]]; then
   if [[ -v COLORTERM ]]; then
@@ -26,16 +14,17 @@ fi
 
 ###################################################################################################
 : <<'DisabledContent'
-  if type tput &> /dev/null; then
-    # TODO: whether `tput init` overrides my Ghostty color theme
-    # How do I tell?
-    tput init
-  else
-    logUnavailable tput
-  fi
-
 # NOTE: I don't seem to need any of this.
 # Address it if I ever have a need.
+
+################################################################################
+if type tput &> /dev/null; then
+  # TODO: whether `tput init` overrides my Ghostty color theme
+  # How do I tell?
+  tput init
+else
+  logUnavailable tput
+fi
 
 ################################################################################
 # Set a fancy prompt

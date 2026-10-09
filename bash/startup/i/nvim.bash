@@ -4,6 +4,8 @@
 set -EeTuo pipefail
 touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
 
+# TODO: detect Neovim first, or not
+
 # NOTE: I am running LazyVim
 set +o emacs
 set -o vi
