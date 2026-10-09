@@ -1,3 +1,3 @@
 # BriteOnyx
 
-Scripting framework supporting robust DevOps workflows
+Open-source scripting framework supporting robust DevOps workflows
