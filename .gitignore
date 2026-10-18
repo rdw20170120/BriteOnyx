@@ -7,11 +7,13 @@
 !*.list
 !*.md
 !*.out
+!*.txt
 !.gitignore
 !.ignore
 !/.mailmap
 
 # Yet still ignore these:
+*-raw.out
 *.bak
 .ran_*
 /tmp

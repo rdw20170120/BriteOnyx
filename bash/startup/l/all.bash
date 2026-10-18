@@ -9,8 +9,6 @@ source $(dirname ${BASH_SOURCE})/ran.bash
 source $(dirname ${BASH_SOURCE})/pkgx.bash
 source $(dirname ${BASH_SOURCE})/PATH.bash
 
-logDone "Bash startup has completed successfully."
-
 ###################################################################################################
 : <<'DisabledContent'
 DisabledContent

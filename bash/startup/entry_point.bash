@@ -33,6 +33,8 @@ fi
 # Run all of my "last" scripts to finish my Bash environment
 source $(dirname ${BASH_SOURCE})/l/all.bash
 
+logDone "BriteOnyx framework successfully activated in ${boFramework}"
+
 ###################################################################################################
 : <<'DisabledContent'
 # NOTE: For debugging Bash:

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091,SC2086,SC2128
+# vim: set ft=bash:
+set -EeTuo pipefail
+
+source ${HOME}/.config/XDG.env
+source ${XDG_CONFIG_HOME}/BO.env
+
+# NOTE: This project uses the BriteOnyx framework
+# shellcheck disable=SC2154
+source ${boFramework}/bash/startup/from_script.bash
+# shellcheck disable=SC2154
+source ${boDirLib}/abortOnFail.bash
+source ${boDirLib}/changeDirectoryIn.bash
+source ${boDirLib}/logging.bash
+source ${boDirLib}/requireArguments.bash
+source ${boDirLib}/requireCommand.bash
+# shellcheck disable=SC2154
+source ${prjPathLib}/project_override.bash
+
+logExecuting ${BASH_SOURCE}
+
+_main() {
+  requireArguments $# 0
+
+  logActivity "Pulling project files from remote repository"
+
+  requireCommand git
+
+  changeDirectoryIn prjDirRoot
+  if git pull; then
+    :
+  else
+    abortOnFail $? "from 'git pull'"
+  fi
+
+  logDone "Project files pulled."
+  return 0
+}
+
+_main "$@"
+
+###################################################################################################
+: <<'DisabledContent'
+DisabledContent

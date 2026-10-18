@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091,SC2086,SC2128
+# vim: set ft=bash:
+set -EeTuo pipefail
+
+source ${HOME}/.config/XDG.env
+source ${XDG_CONFIG_HOME}/BO.env
+
+# NOTE: This project uses the BriteOnyx framework
+# shellcheck disable=SC2154
+source ${boFramework}/bash/startup/from_script.bash
+# shellcheck disable=SC2154
+source ${boDirLib}/logging.bash
+source ${boDirLib}/requireArguments.bash
+# shellcheck disable=SC2154
+source ${prjPathLib}/project_override.bash
+
+logExecuting ${BASH_SOURCE}
+
+_main() {
+  requireArguments $# 0
+
+  logActivity "Cleaning workflow artifacts"
+
+  logWarn "Nothing to do..."
+
+  logDone "Workflow artifacts cleaned."
+  return 0
+}
+
+_main "$@"
+
+###################################################################################################
+: <<'DisabledContent'
+DisabledContent

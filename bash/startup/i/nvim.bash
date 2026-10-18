@@ -55,6 +55,7 @@ ${HOME}/bin/* \
 export -f getUserExecutableFiles
 
 getBashExecutableFiles() {
+  # shellcheck disable=SC2154
   echo "\
 ${boFramework}/bash/bin/* \
 "

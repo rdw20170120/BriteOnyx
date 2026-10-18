@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091,SC2086,SC2128
+# vim: set ft=bash:
+set -EeTuo pipefail
+
+source ${HOME}/.config/XDG.env
+source ${XDG_CONFIG_HOME}/BO.env
+
+# NOTE: This project uses the BriteOnyx framework
+# shellcheck disable=SC2154
+source ${boFramework}/bash/startup/from_script.bash
+# shellcheck disable=SC2154
+source ${boDirLib}/requireArguments.bash
+source ${boDirLib}/requireCommand.bash
+source ${boDirLib}/requireDirectoryIn.bash
+# shellcheck disable=SC2154
+source ${prjPathLib}/project_override.bash
+
+logExecuting ${BASH_SOURCE}
+
+_main() {
+  requireArguments $# 0
+  local _Dir
+
+  logActivity "Formatting project source files"
+
+  requireCommand shfmt
+  requireDirectoryIn prjDirRoot
+
+  # TODO: consider configuring via EditorConfig
+  # TODO: consider `--simplify`
+  # shellcheck disable=SC2154
+  shfmt \
+    --apply-ignore \
+    --write \
+    "${prjDirRoot}"
+
+  logDone "Project source files formatted."
+  return 0
+}
+
+_main "$@"
+
+###################################################################################################
+: <<'DisabledContent'
+DisabledContent
