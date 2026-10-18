@@ -24,3 +24,23 @@ for bootstrapping ALL my
 user accounts,
 development environments,
 and production deployments.
+
+BriteOnyx is very volatile at the moment
+as it is under heavy development.
+Nonetheless,
+it is already quite usable
+and already serves as the foundation
+of all my user accounts
+and development efforts.
+
+To use BriteOnyx:
+
+- clone the project repository: `git clone URL DIRECTORY`
+- open a Bash shell: `bash`
+- change to the project root directory: `cd DIRECTORY`
+- invoke BriteOnyx: `source source_me.bash`
+
+where:
+
+- URL is available from the website hosting this project (GitHub, etc.)
+- local DIRECTORY is chosen by you
