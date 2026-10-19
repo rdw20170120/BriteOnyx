@@ -44,3 +44,23 @@ where:
 
 - URL is available from the website hosting this project (GitHub, etc.)
 - local DIRECTORY is chosen by you
+
+Note though that REAL use of BriteOnyx
+is intended to be as support for
+your user account,
+your project repositories, etc.
+That means
+using BriteOnyx's install script
+from your Bash profile script
+and/or
+your project "activation" scripts similar to my `source_me.bash`.
+That is coming.
+I am already using BriteOnyx that way
+from my Bash profile (`~/.bashrc`)
+but I still need to hook it
+into my `source_me.bash` scripts
+across all my project repositories.
+That should happen over the next few days.
+Since this is the project repository
+for BriteOnyx itself,
+it is a special case.
