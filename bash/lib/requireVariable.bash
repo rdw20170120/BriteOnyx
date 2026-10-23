@@ -8,7 +8,7 @@ declare -F requireVariable >/dev/null && return 0
 
 # Remember that we executed this script, but not by (problematic) logging during shell startup
 touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
-logExecuting "${BASH_SOURCE[0]}"
+# NO: logExecuting "${BASH_SOURCE[0]}"
 
 requireVariable() {
     # Require variable $1
