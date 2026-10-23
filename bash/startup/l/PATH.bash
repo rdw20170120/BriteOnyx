@@ -1,33 +1,35 @@
 #!/usr/bin/env bash -c NOTE: only execute via 'source'
-# shellcheck disable=SC1091,SC2046,SC2086,SC2096,SC2128
+# shellcheck disable=SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
-touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
+
+# Remember that we executed this script, but not by (problematic) logging during shell startup
+touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
 
 # Remember native and original system PATH
 # TODO: Research whether I can remove some of Apple's PATH entries
 [[ -v boPathOriginal ]] || export boPathOriginal=${PATH}
-export boPathNative=${boPathOriginal}
+[[ -v boPathNative ]] || export boPathNative=${boPathOriginal}
 
 # Homebrew
 export boPathHomebrew=${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin
-
 # NO: I CANNOT safely use CoreUtils without breaking macOS
-# export boPathCoreUtils=${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin
-# export boManCoreUtils=${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnuman
+# NO: export boPathCoreUtils=${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin
+# NO: export boManCoreUtils=${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnuman
 
 # System portion of PATH
 # NOTE: Order matters!
 export boPathSystem=${boPathHomebrew}:${boPathNative}
 
 # NO: I CANNOT safely use CoreUtils without breaking macOS
-# export boPathSystem=${boPathCoreUtils}:${boPathHomebrew}:${boPathNative}
+# NO: export boPathSystem=${boPathCoreUtils}:${boPathHomebrew}:${boPathNative}
 
 # Final PATH
 # NOTE: Order matters!
 # shellcheck disable=SC2154
 export PATH=${boPathUser}:${boPathSystem}
 
+# TODO: separate MANPATH to its own script
 # Remember native and original system MANPATH
 # TODO: Research whether I can remove some of Apple's MANPATH entries
 [[ -v boManOriginal ]] || export boManOriginal=${MANPATH}
@@ -43,4 +45,8 @@ export MANPATH
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

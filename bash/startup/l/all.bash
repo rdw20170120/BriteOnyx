@@ -1,14 +1,20 @@
 #!/usr/bin/env bash -c NOTE: only execute via 'source'
-# shellcheck disable=SC1091,SC2046,SC2086,SC2096,SC2128
+# shellcheck disable=SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
-touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
 
-source $(dirname ${BASH_SOURCE})/brew.bash
-source $(dirname ${BASH_SOURCE})/ran.bash
-source $(dirname ${BASH_SOURCE})/pkgx.bash
-source $(dirname ${BASH_SOURCE})/PATH.bash
+# Remember that we executed this script, but not by (problematic) logging during shell startup
+touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
+
+source "$(dirname "${BASH_SOURCE[0]}")"/brew.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/ran.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/pkgx.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/PATH.bash
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

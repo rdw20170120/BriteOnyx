@@ -1,78 +1,89 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1091,SC2086,SC2128
+# shellcheck disable=SC1091
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-source ${HOME}/.config/XDG.env
-source ${XDG_CONFIG_HOME}/BO.env
+# Uncomment for debugging/development
+# boLogLevel=7
+# export boLogLevel
 
-# NOTE: This project uses the BriteOnyx framework
-# shellcheck disable=SC2154
-source ${boFramework}/bash/startup/from_script.bash
-# shellcheck disable=SC2154
-source ${boDirLib}/abortOnFail.bash
-source ${boDirLib}/logging.bash
-source ${boDirLib}/maybeDeleteFile.bash
-source ${boDirLib}/requireArguments.bash
-source ${boDirLib}/requireCommand.bash
-source ${boDirLib}/requireDirectoryIn.bash
-# shellcheck disable=SC2154
-source ${prjPathLib}/project_override.bash
+# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
+requireDirectoryIn prjDirRoot
 
-logExecuting ${BASH_SOURCE}
+# This script uses the BriteOnyx framework, as customized for this project
+source "${HOME}"/.config/XDG.env
+# shellcheck disable=SC2154
+source "${boFramework}"/bash/startup/from_script.bash
+# shellcheck disable=SC2154
+source "${prjDirLib}"/project_override.bash
+
+# Dependencies:
+# shellcheck disable=SC2154
+source "${boDirLib}"/execute.bash
+source "${boDirLib}"/logging.bash
+source "${boDirLib}"/maybeDeleteFile.bash
+source "${boDirLib}"/requireArguments.bash
+source "${boDirLib}"/requireCommand.bash
+source "${boDirLib}"/requireDirectoryIn.bash
+
+logExecuting "${BASH_SOURCE[0]}"
 
 _checkBash() {
-  # Check Bash source file(s) $1 using ShellCheck
-  # $1=path or glob pattern of source file(s) to check
-  logCall _checkBash
-  requireArguments $# 1
-  local -r Pattern=$1
+    # Check Bash source file(s) $1 using ShellCheck
+    # $1=path or glob pattern of source file(s) to check
+    logCall _checkBash
+    requireArguments $# 1
+    local -r Pattern=$1
 
-  logDebug "Linting source file(s) ${Pattern}"
-  # Run command as a condition so that we can choose what to do with any failures (rather than exit)
-  # TODO: Do I need to force Bash if the scripts have Vim modelines?
-  if shellcheck --shell=bash ${Pattern} >>"${_FileLog}"; then
-    :
-  else
-    abortOnFail $? "for 'shellcheck ${Pattern}'"
-  fi
+    logDebug "Linting source file(s) ${Pattern}"
+    # Run command as a condition so that we can choose what to do with any failures (rather than exit)
+    # TODO: Do I need to force Bash if the scripts have Vim modelines?
+    # shellcheck disable=SC2086
+    >>"${_FileLog}" execute shellcheck --shell=bash ${Pattern}
 
-  return 0
+    return 0
 }
 
 _main() {
-  logCall _main
-  requireArguments $# 0
+    # Takes NO arguments
+    logCall _main
+    requireArguments $# 0
 
-  logActivity "Linting project files"
+    logActivity "Linting project files"
 
-  requireCommand shellcheck
-  requireDirectoryIn prjDirRoot
-  requireDirectoryIn prjDirTmp
+    requireCommand shellcheck
+    requireDirectoryIn prjDirRoot
+    requireDirectoryIn prjDirTmp
 
-  # shellcheck disable=SC2154
-  local -r _FileLog=${prjDirRoot}/tmp/project-lint.log
-  maybeDeleteFile "${_FileLog}"
-  logInfo "Logging to new file ${_FileLog}"
+    # shellcheck disable=SC2154
+    local -r _FileLog=${prjDirTmp}/project-lint.log
+    maybeDeleteFile "${_FileLog}"
+    logInfo "Logging to new file ${_FileLog}"
 
-  _checkBash "${prjDirRoot}/bash/lib/*.bash"
-  _checkBash "${prjDirRoot}/bash/startup/*.bash"
-  _checkBash "${prjDirRoot}/bash/startup/f/*.bash"
-  _checkBash "${prjDirRoot}/bash/startup/i/*.bash"
-  _checkBash "${prjDirRoot}/bash/startup/l/*.bash"
-  _checkBash "${prjDirRoot}/bin/*"
-  _checkBash "${prjDirRoot}/lib/*.bash"
-  _checkBash "${prjDirRoot}/source_me.bash"
+    # shellcheck disable=SC2154
+    _checkBash "${prjDirRoot}/bash/bin/*"
+    _checkBash "${prjDirRoot}/bash/lib/*.bash"
+    _checkBash "${prjDirRoot}/bash/startup/*.bash"
+    _checkBash "${prjDirRoot}/bash/startup/f/*.bash"
+    _checkBash "${prjDirRoot}/bash/startup/i/*.bash"
+    _checkBash "${prjDirRoot}/bash/startup/l/*.bash"
+    _checkBash "${prjDirRoot}/bin/*"
+    _checkBash "${prjDirRoot}/lib/*.bash"
+    _checkBash "${prjDirRoot}/source_me.bash"
 
-  # TODO: improve error-handling by scanning log file for errors
-  logInfo "Check log file for any issues: ${_FileLog}"
+    # TODO: improve error-handling by scanning log file for errors
+    logInfo "Check log file for any issues: ${_FileLog}"
 
-  logDone "Linting project files is complete."
-  return 0
+    logDone "Linting project files is complete."
+    return 0
 }
 
 _main "$@"
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

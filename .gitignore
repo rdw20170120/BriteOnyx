@@ -16,4 +16,4 @@
 *-raw.out
 *.bak
 .ran_*
-/tmp
+/.tmp

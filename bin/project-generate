@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1091
+# vim: set ft=bash:
+set -EeTuo pipefail
+
+# Uncomment for debugging/development
+# boLogLevel=7
+# export boLogLevel
+
+# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
+requireDirectoryIn prjDirRoot
+
+# This script uses the BriteOnyx framework, as customized for this project
+source "${HOME}"/.config/XDG.env
+# shellcheck disable=SC2154
+source "${boFramework}"/bash/startup/from_script.bash
+# shellcheck disable=SC2154
+source "${prjDirLib}"/project_override.bash
+
+# Dependencies:
+# shellcheck disable=SC2154
+source "${boDirLib}"/execute.bash
+source "${boDirLib}"/forbidPath.bash
+source "${boDirLib}"/logging.bash
+source "${boDirLib}"/maybeCreateDirectoryTree.bash
+source "${boDirLib}"/maybeDeleteDirectoryTree.bash
+source "${boDirLib}"/requireArguments.bash
+source "${boDirLib}"/requireCommand.bash
+source "${boDirLib}"/requireFile.bash
+
+logExecuting "${BASH_SOURCE[0]}"
+
+_generateFile() {
+    # Generate temporary source file $2 from example source file $1
+    # $1 = existing example source file
+    # $2 = generated temporary source file for later synchronization
+    requireArguments $# 2
+    local -r _FileGenerated=$2
+    local -r _FileExample=$1
+
+    forbidPath "${_FileGenerated}"
+    requireFile "${_FileExample}"
+
+    logDebug "Soft-linking ${_FileGenerated} to ${_FileExample}"
+    requireCommand ln
+    execute ln -s "${_FileExample}" "${_FileGenerated}"
+
+    requireFile "${_FileExample}"
+    requireFile "${_FileGenerated}"
+
+    return 0
+}
+
+# shellcheck disable=SC2120
+_generateFiles() {
+    requireArguments $# 0
+    requireCommand cp
+
+    # shellcheck disable=SC2154
+    local -r _DirSource="${prjDirRoot}/gen"
+    local -r _DirTarget="${_DirGenerate}"
+
+    maybeCreateDirectoryTree "${_DirTarget}"
+    _generateFile "${_DirSource}/source_me.bash" "${_DirTarget}/source_me.bash"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bash/bin"
+    _generateFile "${_DirSource}/nonproject_script" "${_DirTarget}/bash/bin/show-color-16"
+    _generateFile "${_DirSource}/nonproject_script" "${_DirTarget}/bash/bin/show-color-256"
+    _generateFile "${_DirSource}/nonproject_script" "${_DirTarget}/bash/bin/show-logging"
+    _generateFile "${_DirSource}/nonproject_script" "${_DirTarget}/bash/bin/show-terminal"
+    _generateFile "${_DirSource}/nonproject_script" "${_DirTarget}/bash/bin/trees-diff"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bash/lib"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/abortOnFail.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/changeDirectory.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/changeDirectoryIn.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/execute.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/forbidPath.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/forbidVariable.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/getAbsolutePath.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/getTemporaryFile.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/gitStatusIsClean.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/logging.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/maybeCreateDirectoryTree.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/maybeDeleteDirectoryTree.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/maybeDeleteFile.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/parentOf.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/prepareToSourceOptional.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireArguments.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireCommand.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireDirectory.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireDirectoryIn.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireFile.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireFileIn.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireScript.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireValue.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireValueIn.bash"
+    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireVariable.bash"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bash/startup"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/entry_point.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/from_profile.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/from_script.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/onError.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/XDG.bash"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bash/startup/f"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/f/all.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/f/locale.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/f/machine.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/f/set.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/f/shopt.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/f/temp.bash"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bash/startup/i"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/all.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/bash.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/color.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/dircolors.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/fd.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/ghostty.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/git.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/grep.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/less.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/ls.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/nvim.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/rg.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/i/terminal.bash"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bash/startup/l"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/l/all.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/l/brew.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/l/PATH.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/l/pkgx.bash"
+    _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/l/ran.bash"
+
+    maybeCreateDirectoryTree "${_DirTarget}/bin"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-clean"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-commit"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-compile"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-ctags"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-doctor"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-format"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-generate"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-lint"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-pull"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-push"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-quality"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-test"
+
+    maybeCreateDirectoryTree "${_DirTarget}/lib"
+    _generateFile "${_DirSource}/project_override.bash" "${_DirTarget}/lib/project_override.bash"
+
+    return 0
+}
+
+_main() {
+    # Takes NO arguments
+    logCall _main
+    requireArguments $# 0
+
+    logActivity "Generating temporary source files for manual synchronization"
+
+    # NOTE: this script uses VisualDiffer, installed via Homebrew
+    # REF: https://wiki.visualdiffer.com/
+    # TODO: consider creating a link or alias to `visdiff`
+    local -r _Exe=/Applications/VisualDiffer.app/Contents/Helpers/visdiff
+    requireCommand ${_Exe}
+
+    requireDirectoryIn prjDirTmp
+    # shellcheck disable=SC2154
+    local -r _DirGenerate="${prjDirTmp}/generate"
+    maybeDeleteDirectoryTree "${_DirGenerate}"
+
+    _generateFiles
+
+    # shellcheck disable=SC2154
+    execute "${_Exe}" --focus --no-warning --wait "${prjDirRoot}" "${_DirGenerate}"
+
+    logDone "Generated source files synchronized (if YOU did your job)."
+    return 0
+}
+
+_main "$@"
+
+###################################################################################################
+: <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
+DisabledContent

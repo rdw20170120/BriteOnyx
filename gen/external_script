@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# vim: set ft=bash:
+set -EeTuo pipefail
+
+# This script does NOT use the BriteOnyx framework
+
+_main() {
+    # DESCRIPTION
+    # Takes NO arguments
+    # Takes an arbitrary number of arguments
+    # $1 = DESCRIPTION
+
+    # TODO: implement
+
+    return 0
+}
+
+_main "$@"
+
+###################################################################################################
+: <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
+DisabledContent

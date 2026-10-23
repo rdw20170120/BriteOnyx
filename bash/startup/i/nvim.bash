@@ -1,8 +1,10 @@
 #!/usr/bin/env bash -c NOTE: only execute via 'source'
-# shellcheck disable=SC2016,SC2046,SC2086,SC2096,SC2128,SC2139
+# shellcheck disable=SC2016,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
-touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
+
+# Remember that we executed this script, but not by (problematic) logging during shell startup
+touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
 
 # TODO: detect Neovim first, or not
 
@@ -12,7 +14,7 @@ set -o vi
 
 export EDITOR=nvim
 export VISUAL="${EDITOR}"
-alias edit="${EDITOR}"
+alias edit='${EDITOR}'
 
 # LazyVim's default plugins recognize these special comments:
 #
@@ -30,7 +32,7 @@ alias edit="${EDITOR}"
 # TODO: refactor for general reuse
 
 getBashConfigFiles() {
-  echo "\
+    echo "\
 ${HOME}/.bash_login \
 ${HOME}/.bash_logout \
 ${HOME}/.bash_profile_NO \
@@ -41,36 +43,36 @@ ${HOME}/.profile \
 export -f getBashConfigFiles
 
 getEnvConfigFiles() {
-  echo "\
+    echo "\
 ${XDG_CONFIG_HOME}/*.env \
 "
 }
 export -f getEnvConfigFiles
 
 getUserExecutableFiles() {
-  echo "\
+    echo "\
 ${HOME}/bin/* \
 "
 }
 export -f getUserExecutableFiles
 
 getBashExecutableFiles() {
-  # shellcheck disable=SC2154
-  echo "\
+    # shellcheck disable=SC2154
+    echo "\
 ${boFramework}/bash/bin/* \
 "
 }
 export -f getBashExecutableFiles
 
 getBashLibraryFiles() {
-  echo "\
+    echo "\
 ${boFramework}/bash/lib/*.bash \
 "
 }
 export -f getBashLibraryFiles
 
 getBashStartupFiles() {
-  echo "\
+    echo "\
 ${boFramework}/bash/s/*.bash \
 ${boFramework}/bash/s/f/*.bash \
 ${boFramework}/bash/s/i/*.bash \
@@ -79,48 +81,59 @@ ${boFramework}/bash/s/l/*.bash \
 }
 export -f getBashStartupFiles
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' $(getBashConfigFiles)'
 _Files+=' $(getBashExecutableFiles)'
 _Files+=' $(getBashLibraryFiles)'
 _Files+=' $(getBashStartupFiles)'
 _Files+=' $(getEnvConfigFiles)'
-alias edit-config-bash-all="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-config-bash-all="${_Files}"
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' $(getBashExecutableFiles)'
-alias edit-config-bash-exe="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-config-bash-exe="${_Files}"
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' $(getBashLibraryFiles)'
-alias edit-config-bash-lib="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-config-bash-lib="${_Files}"
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' $(getBashConfigFiles)'
 _Files+=' $(getBashLibraryFiles)'
 _Files+=' $(getBashStartupFiles)'
 _Files+=' $(getEnvConfigFiles)'
-alias edit-config-bash-startup="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-config-bash-startup="${_Files}"
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' $(getBashExecutableFiles)'
 _Files+=' $(getUserExecutableFiles)'
-alias edit-exe-all="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-exe-all="${_Files}"
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' ${HOME}/.gitignore'
 _Files+=' ${HOME}/.ignore'
 _Files+=' ${XDG_CONFIG_HOME}/fd/ignore'
 _Files+=' ${XDG_CONFIG_HOME}/rg/.ripgreprc'
 _Files+=' ${XDG_CONFIG_HOME}/rg/ignore'
-alias edit-ignore="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-ignore="${_Files}"
 
-_Files=''
+_Files='${EDITOR}'
 _Files+=' $(getBashLibraryFiles)'
-alias edit-lib-all="${EDITOR}${_Files}"
+# shellcheck disable=SC2139
+alias edit-lib-all="${_Files}"
 
 unset _Files
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

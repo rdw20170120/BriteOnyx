@@ -1,11 +1,13 @@
 #!/usr/bin/env bash -c NOTE: only execute via 'source'
-# shellcheck disable=SC1090,SC1091,SC2046,SC2086,SC2096,SC2128
+# shellcheck disable=SC1090,SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
-touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
+
+# Remember that we executed this script, but not by (problematic) logging during shell startup
+touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
 
 # shellcheck disable=SC2154
-source ${boDirLib}/logging.bash
+source "${boDirLib}"/logging.bash
 
 # TODO: Reconsider where all of these belong
 # TODO: Consider other environment variables that configure Bash
@@ -24,20 +26,20 @@ export HISTSIZE=500
 # and /etc/profile sources /etc/bash.bashrc.
 # TODO: Consider installing Bash completions via `brew`
 if shopt -oq posix; then
-  logWarn "Running in POSIX mode, so skipping Bash completions"
+    logWarn "Running in POSIX mode, so skipping Bash completions"
 else
-  source ${boDirLib}/prepareToSourceOptional.bash
+    source "${boDirLib}"/prepareToSourceOptional.bash
 
-  _Script=/usr/share/bash-completion/bash_completion
-  if prepareToSourceOptional ${_Script}; then
-    source ${_Script}
-  else
-    _Script=/etc/bash_completion
+    _Script=/usr/share/bash-completion/bash_completion
     if prepareToSourceOptional ${_Script}; then
-      source ${_Script}
+        source ${_Script}
+    else
+        _Script=/etc/bash_completion
+        if prepareToSourceOptional ${_Script}; then
+            source ${_Script}
+        fi
     fi
-  fi
-  unset _Script
+    unset _Script
 fi
 
 alias restart='exec bash'
@@ -46,4 +48,8 @@ alias status='echo "Status = $?"'
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

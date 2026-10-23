@@ -1,52 +1,62 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1091,SC2086,SC2128
+# shellcheck disable=SC1091
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-source ${HOME}/.config/XDG.env
-source ${XDG_CONFIG_HOME}/BO.env
+# Uncomment for debugging/development
+# boLogLevel=7
+# export boLogLevel
 
-# NOTE: This project uses the BriteOnyx framework
-# shellcheck disable=SC2154
-source ${boFramework}/bash/startup/from_script.bash
-# shellcheck disable=SC2154
-source ${boDirLib}/abortOnFail.bash
-source ${boDirLib}/gitStatusIsClean.bash
-source ${boDirLib}/logging.bash
-source ${boDirLib}/requireArguments.bash
-source ${boDirLib}/requireCommand.bash
-# shellcheck disable=SC2154
-source ${prjPathLib}/project_override.bash
+# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
+requireDirectoryIn prjDirRoot
 
-logExecuting ${BASH_SOURCE}
+# This script uses the BriteOnyx framework, as customized for this project
+source "${HOME}"/.config/XDG.env
+# shellcheck disable=SC2154
+source "${boFramework}"/bash/startup/from_script.bash
+# shellcheck disable=SC2154
+source "${prjDirLib}"/project_override.bash
+
+# Dependencies:
+# shellcheck disable=SC2154
+source "${boDirLib}"/abortOnFail.bash
+source "${boDirLib}"/execute.bash
+source "${boDirLib}"/gitStatusIsClean.bash
+source "${boDirLib}"/logging.bash
+source "${boDirLib}"/requireArguments.bash
+source "${boDirLib}"/requireCommand.bash
+
+logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-  requireArguments $# 0
+    # Takes NO arguments
+    logCall _main
+    requireArguments $# 0
 
-  project-clean
-  project-quality
+    project-clean
+    project-quality
 
-  logActivity "Pushing committed project file changes to remote repository"
+    logActivity "Pushing committed project file changes to remote repository"
 
-  requireCommand git
+    requireCommand git
 
-  # shellcheck disable=SC2154
-  if gitStatusIsClean ${prjDirRoot}; then
-    if git push; then
-      :
+    # shellcheck disable=SC2154
+    if gitStatusIsClean "${prjDirRoot}"; then
+        execute git push
     else
-      abortOnFail $? "from 'git push'"
+        abortOnFail 2 "Push aborted since Git working directory is dirty"
     fi
-  else
-    abortOnFail 2 "Push aborted since Git working directory is dirty"
-  fi
 
-  logDone "Project file changes pushed to remote repository."
-  return 0
+    logDone "Project file changes pushed to remote repository."
+    return 0
 }
 
 _main "$@"
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

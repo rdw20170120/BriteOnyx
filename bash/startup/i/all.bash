@@ -1,23 +1,29 @@
 #!/usr/bin/env bash -c NOTE: only execute via 'source'
-# shellcheck disable=SC1091,SC2046,SC2086,SC2096,SC2128
+# shellcheck disable=SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
-touch $(dirname ${BASH_SOURCE})/.ran_$(basename ${BASH_SOURCE})
 
-source $(dirname ${BASH_SOURCE})/terminal.bash
-source $(dirname ${BASH_SOURCE})/color.bash
+# Remember that we executed this script, but not by (problematic) logging during shell startup
+touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
+
+source "$(dirname "${BASH_SOURCE[0]}")"/terminal.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/color.bash
 logTrace "Connected to a TTY, configuring for user interaction"
-source $(dirname ${BASH_SOURCE})/bash.bash
-source $(dirname ${BASH_SOURCE})/dircolors.bash
-source $(dirname ${BASH_SOURCE})/fd.bash
-source $(dirname ${BASH_SOURCE})/ghostty.bash
-source $(dirname ${BASH_SOURCE})/git.bash
-source $(dirname ${BASH_SOURCE})/grep.bash
-source $(dirname ${BASH_SOURCE})/less.bash
-source $(dirname ${BASH_SOURCE})/ls.bash
-source $(dirname ${BASH_SOURCE})/nvim.bash
-source $(dirname ${BASH_SOURCE})/rg.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/bash.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/dircolors.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/fd.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/ghostty.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/git.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/grep.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/less.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/ls.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/nvim.bash
+source "$(dirname "${BASH_SOURCE[0]}")"/rg.bash
 
 ###################################################################################################
 : <<'DisabledContent'
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent
