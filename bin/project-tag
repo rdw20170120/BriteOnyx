@@ -38,12 +38,12 @@ _main() {
 
     requireCommand git
 
-    if $# -eq 0; then
+    if [[ $# -eq 0 ]]; then
         changeDirectoryIn prjDirRoot
         # shellcheck disable=SC2154
         logInfo "Existing Git tags on this repository: ${prjDirRoot}"
         execute git tag
-    elif $# -eq 1; then
+    elif [[ $# -eq 1 ]]; then
         logArgument "$1" 1 'version number (X.Y.Z) to apply as a Git tag'
         local -r _Tag=$1
         requireValue "${_Tag}"
