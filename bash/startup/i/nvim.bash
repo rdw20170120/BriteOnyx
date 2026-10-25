@@ -73,10 +73,10 @@ export -f getBashLibraryFiles
 
 getBashStartupFiles() {
     echo "\
-${boFramework}/bash/s/*.bash \
-${boFramework}/bash/s/f/*.bash \
-${boFramework}/bash/s/i/*.bash \
-${boFramework}/bash/s/l/*.bash \
+${boFramework}/bash/startup/*.bash \
+${boFramework}/bash/startup/f/*.bash \
+${boFramework}/bash/startup/i/*.bash \
+${boFramework}/bash/startup/l/*.bash \
 "
 }
 export -f getBashStartupFiles
