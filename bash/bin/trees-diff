@@ -26,8 +26,8 @@ _compare() {
     # TODO: Enhance file/directory handling for robustness
     logCall _compare
     requireArguments $# 2
-    logValue "$1" 'argument 1'
-    logValue "$2" 'argument 2'
+    logArgument "$1" 1 'first directory'
+    logArgument "$2" 2 'second directory'
 
     requireCommand diff
 
@@ -132,7 +132,6 @@ USAGE
 }
 
 _main() {
-    # Takes an arbitrary number of arguments
     logCall _main
     # NO: requireArguments
 

@@ -13,16 +13,15 @@ logExecuting "${BASH_SOURCE[0]}"
 
 FUNCTION_NAME() {
     # DESCRIPTION
-    # Takes NO arguments
-    # Takes an arbitrary number of arguments
     logCall FUNCTION_NAME
     requireArguments $# 0
-    # NO: requireArguments
     logArgument "$1" 1 'DESCRIPTION'
+
+    # TODO: implement
 
     return 0
 }
-export -f FUNCTION_NAME
+declare -fx FUNCTION_NAME
 
 # Dependencies:
 # NOTE: include only those functions actually used in this script

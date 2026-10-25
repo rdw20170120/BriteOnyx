@@ -16,7 +16,7 @@ getAbsolutePath() {
     # NO: `realpath` returns the target of a link, rather than the link itself
     logCall getAbsolutePath
     requireArguments $# 1
-    logValue "$1" '1 pathname'
+    logArgument "$1" 1 'pathname'
 
     requireCommand basename
     requireCommand cd

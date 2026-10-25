@@ -9,7 +9,7 @@ logExecuting "${BASH_SOURCE[0]}"
 # This script MUST be called from each project script,
 # since each executes in a new subshell
 
-logDebug "Overriding some configuration for this project for this Bash session"
+logDebug 'Overriding some configuration for this project for this Bash session'
 
 # Modify PATH for this project
 requireDirectoryIn prjPathBin

@@ -15,6 +15,8 @@ requireArguments() {
     # $1 = actual number of arguments (from $#) received by caller
     # $2 = expected number of arguments
 
+    # TODO: enhance to accept a range of expected arguments (X-Y)
+
     if [[ $# -ne 2 ]]; then
         logError "Function 'requireArguments' requires 2 arguments instead of $#"
         exit 127

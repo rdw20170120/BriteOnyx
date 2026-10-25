@@ -31,6 +31,11 @@ fi
 # Run all "last" scripts to finish Bash environment
 source "$(dirname "${BASH_SOURCE[0]}")"/l/all.bash
 
+# Update `boFramework` to an absolute path
+source "${boDirLib}"/getAbsolutePath.bash
+boFramework=$(getAbsolutePath "${boFramework}")
+export boFramework
+
 logDone "BriteOnyx framework successfully activated in ${boFramework}"
 
 ###################################################################################################

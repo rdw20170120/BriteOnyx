@@ -26,13 +26,12 @@ source "${boDirLib}"/requireDirectoryIn.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 
     logActivity "Compiling code"
 
-    logWarn "Nothing to do..."
+    logWarn "No compilable source present, nothing to do"
 
     logDone "Code compiled."
     return 0

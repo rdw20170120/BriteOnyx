@@ -45,7 +45,6 @@ _checkBash() {
 }
 
 _main() {
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 

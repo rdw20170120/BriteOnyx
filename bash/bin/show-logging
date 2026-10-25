@@ -20,7 +20,6 @@ logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
     # Show logging examples
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 

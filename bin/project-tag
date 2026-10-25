@@ -24,6 +24,7 @@ source "${prjDirLib}"/project_override.bash
 source "${boDirLib}"/abortOnFail.bash
 source "${boDirLib}"/changeDirectoryIn.bash
 source "${boDirLib}"/execute.bash
+source "${boDirLib}"/gitStatusIsClean.bash
 source "${boDirLib}"/logging.bash
 source "${boDirLib}"/requireArguments.bash
 source "${boDirLib}"/requireCommand.bash
@@ -39,7 +40,7 @@ _main() {
     requireCommand git
 
     if [[ $# -eq 0 ]]; then
-        changeDirectoryIn prjDirRoot
+        # changeDirectoryIn prjDirRoot
         # shellcheck disable=SC2154
         logInfo "Existing Git tags on this repository: ${prjDirRoot}"
         execute git tag
@@ -50,12 +51,15 @@ _main() {
 
         logActivity "Tagging Git repository as ${_Tag}"
 
-        changeDirectoryIn prjDirRoot
-        execute git tag \
-            --annotate "${_Tag}" \
-            --message="Tag ${_Tag}"
+        if gitStatusIsClean "${prjDirRoot}"; then
+            execute git tag \
+                --annotate "${_Tag}" \
+                --message="Tag ${_Tag}"
 
-        logDone "Repository tagged."
+            logDone "Repository tagged."
+        else
+            abortOnFail 2 "Tagging aborted since Git working directory is dirty"
+        fi
     else
         abortOnFail 1 "Requires 0-1 arguments instead of $#"
     fi

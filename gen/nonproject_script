@@ -44,17 +44,15 @@ logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
     # DESCRIPTION
-    # Takes NO arguments
-    # Takes an arbitrary number of arguments
     logCall _main
     requireArguments $# 0
-    # NO: requireArguments
+    logArgument "$1" 1 'DESCRIPTION'
 
-    logActivity "DESCRIBE"
+    logActivity 'DESCRIBE'
 
     # TODO: implement
 
-    logDone "DESCRIBE."
+    logDone 'DESCRIBE.'
     return 0
 }
 

@@ -26,18 +26,27 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 
     logActivity "The doctor will see you now"
 
     # TODO: verify this list of commands is complete
-    # TODO: research which commands can be safely "assumed" (e.g., `dirname`, etc?)
+    # TODO: research which commands can safely be "assumed" (e.g., `dirname`, etc?)
+    requireCommand cat
     requireCommand ctags
+    requireCommand diff
+    requireCommand ghostty
     requireCommand git
+    requireCommand gls
+    requireCommand ln
+    requireCommand rg
+    requireCommand rm
+    requireCommand seq
     requireCommand shellcheck
     requireCommand shfmt
+    requireCommand tput
+    requireCommand tset
 
     logDone "Your check-up is complete."
     return 0

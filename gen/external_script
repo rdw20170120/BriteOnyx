@@ -6,8 +6,6 @@ set -EeTuo pipefail
 
 _main() {
     # DESCRIPTION
-    # Takes NO arguments
-    # Takes an arbitrary number of arguments
     # $1 = DESCRIPTION
 
     # TODO: implement

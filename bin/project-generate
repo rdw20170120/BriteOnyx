@@ -54,7 +54,6 @@ _generateFile() {
 # shellcheck disable=SC2120
 _generateFiles() {
     requireArguments $# 0
-    requireCommand cp
 
     # shellcheck disable=SC2154
     local -r _DirSource="${prjDirRoot}/gen"
@@ -146,6 +145,7 @@ _generateFiles() {
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-pull"
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-push"
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-quality"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-tag"
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-test"
 
     maybeCreateDirectoryTree "${_DirTarget}/lib"
@@ -155,7 +155,6 @@ _generateFiles() {
 }
 
 _main() {
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 

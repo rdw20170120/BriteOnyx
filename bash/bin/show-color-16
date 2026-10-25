@@ -21,7 +21,6 @@ logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
     # Show 16-color palette in current terminal color theme
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 

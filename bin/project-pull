@@ -28,7 +28,6 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    # Takes NO arguments
     logCall _main
     requireArguments $# 0
 

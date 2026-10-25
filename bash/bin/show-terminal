@@ -27,38 +27,42 @@ _describeColor() {
     # $2 = foreground color ANSI code
     # $3 = name for typical ANSI color at this index
     requireArguments $# 3
+
     requireCommand tput
 
-    local -r normal=$(tput sgr0)
-    local -r postfix="$3"
-    local -r prefix="This is typically"
-    local -r via_ansi="\e[0;$2m"
+    declare -r _Normal=$(tput sgr0)
+    declare -r _Postfix="$3"
+    declare -r _Prefix="This is typically"
+    declare -r _ViaAnsi="\e[0;$2m"
     # shellcheck disable=SC2086
-    local -r via_tput=$(tput setaf $1)
-    echo -e "${via_ansi}$1  (ANSI) ${prefix}${normal} ${via_tput}(tput) ${postfix}${normal}"
+    declare -r _ViaTput=$(tput setaf $1)
+    echo -e "${_ViaAnsi}$1  (ANSI) ${_Prefix}${_Normal} ${_ViaTput}(tput) ${_Postfix}${_Normal}"
 }
 
 _main() {
-    # Describe current terminal information
-    # Takes NO arguments
+    # Describe current terminal
     logCall _main
     requireArguments $# 0
+
     requireCommand ghostty
     requireCommand rg
     requireCommand tput
     requireCommand tset
 
     # shellcheck disable=SC2034
-    local -r boLogLevel=7
-    logInfo "Terminal identification:"
-    logValue "${TERM}" "TERM"
-    logValue "${COLORTERM}" "COLORTERM"
-    logValue "${TERM_PROGRAM}" "TERM_PROGRAM"
-    logValue "$(tput longname)" "tput longname"
-    logValue "$(tset -q)" "tset -q"
-    logValue "$(ghostty +show-config | rg theme)" "Ghostty configuration"
+    declare -r boLogLevel=7
 
-    logInfo "Current 16-color palette:"
+    logActivity 'Describing current terminal'
+
+    logInfo 'Terminal identification:'
+    logVariable COLORTERM
+    logVariable TERM
+    logVariable TERM_PROGRAM
+    logValue "$(tput longname)" 'tput longname'
+    logValue "$(tset -q)" 'tset -q'
+    logValue "$(ghostty +show-config | rg theme)" 'Ghostty theme'
+
+    logInfo 'Current 16-color palette:'
     _describeColor 0 30 'black'
     _describeColor 1 31 'dark red'
     _describeColor 2 32 'dark green'
