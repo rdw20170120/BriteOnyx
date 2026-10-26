@@ -5,6 +5,8 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
+# TODO: requireDirectoryIn HOME
+
 # Apply XDG standard defaults to make them explicit
 # NO: XDG_RUNTIME_HOME, too complicated
 declare -x XDG_CACHE_HOME=${HOME}/.cache

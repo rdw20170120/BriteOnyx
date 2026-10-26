@@ -9,7 +9,7 @@ set -EeTuo pipefail
 
 # NOTE: override BriteOnyx framework for local development
 # since this is the BriteOnyx project repository
-boFramework=$(getAbsolutePath "${BASH_SOURCE[0]}")
+boFramework=$(absolute "${BASH_SOURCE[0]}")
 declare -rx boFramework
 
 # This script uses the BriteOnyx framework
@@ -21,7 +21,6 @@ source "${boFramework}"/bash/startup/from_script.bash
 # shellcheck disable=SC2154
 source "${boDirLib}"/changeDirectoryIn.bash
 source "${boDirLib}"/forbidVariable.bash
-source "${boDirLib}"/getAbsolutePath.bash
 source "${boDirLib}"/logging.bash
 source "${boDirLib}"/maybeCreateDirectoryTree.bash
 source "${boDirLib}"/requireDirectory.bash
@@ -32,14 +31,14 @@ logExecuting "${BASH_SOURCE[0]}"
 logActivity 'Activating this project for this Bash session'
 
 forbidVariable prjDirRoot
-prjDirRoot=$(dirname "${BASH_SOURCE[0]}")
-prjDirRoot=$(getAbsolutePath "${prjDirRoot}")
+prjDirRoot="${BASH_SOURCE[0]}"
+prjDirRoot=$(parentOf "${prjDirRoot}")
 declare -rx prjDirRoot
 logVariable prjDirRoot
 requireDirectoryIn prjDirRoot
 
 forbidVariable prjDirTmp
-prjDirTmp=$(getAbsolutePath "${prjDirRoot}"/.tmp)
+prjDirTmp=$(absolute "${prjDirRoot}"/.tmp)
 declare -rx prjDirTmp
 logVariable prjDirTmp
 maybeCreateDirectoryTree "${prjDirTmp}"

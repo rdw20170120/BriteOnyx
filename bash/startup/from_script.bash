@@ -5,7 +5,7 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-source "$(dirname "${BASH_SOURCE[0]}")"/entry_point.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/entry_point.bash
 
 ###################################################################################################
 : <<'DisabledContent'

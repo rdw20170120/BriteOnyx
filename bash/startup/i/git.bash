@@ -1,11 +1,21 @@
 #!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC2096
+# shellcheck disable=SC1090,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-git config --global commit.template "${XDG_CONFIG_HOME}/git/template.txt"
+# Dependencies:
+# shellcheck disable=SC2154
+source "$(require "${boDirLib}"/requireDirectoryIn.bash)"
+source "$(require "${boDirLib}"/requireFileIn.bash)"
+
+if [[ ! -v boFileTemplateGit ]]; then
+    requireDirectoryIn XDG_CONFIG_HOME
+    boFileTemplateGit=${XDG_CONFIG_HOME}/git/template.txt
+    declare -x boFileTemplateGit
+fi
+requireFileIn boFileTemplateGit
 
 ###################################################################################################
 : <<'DisabledContent'

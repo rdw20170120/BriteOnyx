@@ -5,10 +5,10 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-source "$(dirname "${BASH_SOURCE[0]}")"/brew.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/ran.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/pkgx.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/PATH.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/brew.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/ran.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/pkgx.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/PATH.bash
 
 ###################################################################################################
 : <<'DisabledContent'

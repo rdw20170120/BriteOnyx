@@ -77,14 +77,12 @@ _generateFiles() {
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/execute.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/forbidPath.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/forbidVariable.bash"
-    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/getAbsolutePath.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/getTemporaryFile.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/gitStatusIsClean.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/logging.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/maybeCreateDirectoryTree.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/maybeDeleteDirectoryTree.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/maybeDeleteFile.bash"
-    _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/parentOf.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/prepareToSourceOptional.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireArguments.bash"
     _generateFile "${_DirSource}/library_script.bash" "${_DirTarget}/bash/lib/requireCommand.bash"
@@ -135,6 +133,7 @@ _generateFiles() {
     _generateFile "${_DirSource}/startup_script.bash" "${_DirTarget}/bash/startup/l/ran.bash"
 
     maybeCreateDirectoryTree "${_DirTarget}/bin"
+    _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-audit"
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-clean"
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-commit"
     _generateFile "${_DirSource}/project_script" "${_DirTarget}/bin/project-compile"
@@ -151,6 +150,7 @@ _generateFiles() {
 
     maybeCreateDirectoryTree "${_DirTarget}/lib"
     _generateFile "${_DirSource}/project_override.bash" "${_DirTarget}/lib/project_override.bash"
+    _generateFile "${_DirSource}/project_override.bash" "${_DirTarget}/lib/reference.bash"
 
     return 0
 }

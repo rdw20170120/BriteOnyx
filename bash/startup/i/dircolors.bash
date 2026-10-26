@@ -11,11 +11,11 @@ if type gdircolors &>/dev/null; then
     source "${boDirLib}"/prepareToSourceOptional.bash
 
     # NOTE: I manually copied and edited `dircolors-database-custom.out`
-    >"$(dirname "${BASH_SOURCE[0]}")"/dircolors-LS_COLORS-custom.out gdircolors \
+    >"$(parentOf "${BASH_SOURCE[0]}")"/dircolors-LS_COLORS-custom.out gdircolors \
         --bourne-shell \
-        "$(dirname "${BASH_SOURCE[0]}")"/dircolors-database-custom.out
+        "$(parentOf "${BASH_SOURCE[0]}")"/dircolors-database-custom.out
 
-    _Script="$(dirname "${BASH_SOURCE[0]}")"/dircolors-LS_COLORS-custom.out
+    _Script="$(parentOf "${BASH_SOURCE[0]}")"/dircolors-LS_COLORS-custom.out
     prepareToSourceOptional "${_Script}" && source "${_Script}"
 
     # Valid `$LS_COLORS` syntax for `gls` is invalid syntax for Apple macOS `ls`

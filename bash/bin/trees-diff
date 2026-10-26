@@ -40,7 +40,7 @@ _compare() {
     local Node
     for Node in "$1"/*; do
         logDebug "Found node:  ${Node}"
-        Base=$(basename "${Node}")
+        Base=$(baseOf "${Node}")
         if [[ -d "${Node}" ]]; then
             logDebug "Found directory:  ${Node}"
             if [[ -d "$2/${Base}" ]]; then

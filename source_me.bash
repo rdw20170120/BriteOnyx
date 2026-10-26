@@ -3,13 +3,16 @@
 # vim: set ft=bash:
 set -EeTuo pipefail
 
+# To safely test this script,
+# try: bash -c '. source_me.bash'
+
 # Uncomment for debugging/development
 boLogLevel=7
 export boLogLevel
 
 # NOTE: override BriteOnyx framework for local development
 # since this is the BriteOnyx project repository
-boFramework=$(getAbsolutePath "${BASH_SOURCE[0]}")
+boFramework=$(parentOf "${BASH_SOURCE[0]}")
 declare -rx boFramework
 
 # This script uses the BriteOnyx framework
@@ -20,7 +23,7 @@ source "${boFramework}"/bash/startup/from_script.bash
 # shellcheck disable=SC2154
 source "${boDirLib}"/changeDirectoryIn.bash
 source "${boDirLib}"/forbidVariable.bash
-source "${boDirLib}"/getAbsolutePath.bash
+source "${boDirLib}"/absolute.bash
 source "${boDirLib}"/logging.bash
 source "${boDirLib}"/maybeCreateDirectoryTree.bash
 source "${boDirLib}"/requireDirectory.bash
@@ -31,51 +34,49 @@ logExecuting "${BASH_SOURCE[0]}"
 logActivity 'Activating this project for this Bash session'
 
 forbidVariable prjDirRoot
-prjDirRoot=$(dirname "${BASH_SOURCE[0]}")
-prjDirRoot=$(getAbsolutePath "${prjDirRoot}")
+prjDirRoot=$(parentOf "${BASH_SOURCE[0]}")
 declare -rx prjDirRoot
 logVariable prjDirRoot
 requireDirectoryIn prjDirRoot
 
 forbidVariable prjDirTmp
-prjDirTmp=$(getAbsolutePath "${prjDirRoot}"/.tmp)
+prjDirTmp="${prjDirRoot}"/.tmp
 declare -rx prjDirTmp
 logVariable prjDirTmp
 maybeCreateDirectoryTree "${prjDirTmp}"
 
 # Use relative path for project scripts
-# so it works in project directory and all subdirectories
-forbidVariable prjPathBin
-export prjPathBin=./bin
-logVariable prjPathBin
-requireDirectory "${prjDirRoot}"/${prjPathBin}
+# so it works in project directory
+# and all subdirectories (subprojects)
+forbidVariable prjPathExe
+prjPathExe=./bin
+declare -x prjPathExe
+logVariable prjPathExe
 
 forbidVariable prjDirLib
-export prjDirLib=${prjDirRoot}/lib
+prjDirLib=${prjDirRoot}/lib
+declare -rx prjDirLib
 logVariable prjDirLib
 requireDirectoryIn prjDirLib
 
-source "${prjDirLib}"/project_override.bash
-
-logDone "Project successfully activated in ${prjDirRoot}"
+_Script=${prjDirLib}/project_override.bash
+require "${_Script}" && source "${_Script}"
 
 changeDirectoryIn prjDirRoot
 
+logDone "Project successfully activated in ${prjDirRoot}"
+
+unset _Script
+
+###############################################################################
+: <<'DisabledContent'
+# TODO: RESEARCH: how can I enhance BriteOnyx around these?
 # Disable `errexit` in user's session
 # TODO: in an `EXIT` `trap`
 set +o errexit
 # Disable `trap` in user's session
 trap --
 
-# Edit project source files
-# TODO: enhance these to be more accurate and complete
-alias edit-project-bash='${EDITOR} $(fd .bash ${prjDirRoot})'
-alias edit-project-doc='${EDITOR} $(fd .md ${prjDirRoot})'
-alias edit-project-exe='${EDITOR} ${prjPathBin}/*'
-alias edit-project-lib='${EDITOR} ${prjDirLib}/*'
-
-###############################################################################
-: <<'DisabledContent'
 Troubleshooting Bash:
   set -o verbose; set -o xtrace
   # Code to troubleshoot

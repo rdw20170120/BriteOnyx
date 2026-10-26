@@ -1,27 +1,37 @@
 #!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC2096
+# shellcheck disable=SC1090,SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
-
-logExecuting "${BASH_SOURCE[0]}"
 
 # This script uses the BriteOnyx framework
 # This script MUST be called from each project script,
 # since each executes in a new subshell
 
-logDebug 'Overriding some configuration for this project for this Bash session'
+# Dependencies:
+# shellcheck disable=SC2154
+source "${boDirLib}"/logging.bash
+source "${boDirLib}"/requireValueIn.bash
+
+logExecuting "${BASH_SOURCE[0]}"
 
 # Modify PATH for this project
-# NOTE: project scripts override the rest of PATH
-requireDirectoryIn prjPathBin
-requireVariable PATH
-# shellcheck disable=SC2154
-PATH=${prjPathBin}:${PATH}
-export PATH
-logVariable PATH
-
-# Disable Bash command hashing so that PATH works dynamically
+# NOTE: disable Bash command hashing so that PATH works dynamically
 set +h
+# Project scripts override the rest of boPathUser,
+# which overrides the rest of PATH
+requireValueIn boPathUser
+requireValueIn prjPathExe
+# shellcheck disable=SC2154
+boPathUser=${prjPathExe}:${boPathUser}
+declare -x boPathUser
+logVariable boPathUser
+
+# Recalculate PATH
+# shellcheck disable=SC2154
+source "$(require "${boFramework}"/startup/l/PATH.bash)"
+
+# shellcheck disable=SC2154
+source "$(require "${prjDirLib}"/reference.bash)"
 
 ###############################################################################
 : <<'DisabledContent'

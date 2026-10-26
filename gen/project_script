@@ -24,14 +24,12 @@ source "${boDirLib}"/changeDirectoryIn.bash
 source "${boDirLib}"/execute.bash
 source "${boDirLib}"/forbidPath.bash
 source "${boDirLib}"/forbidVariable.bash
-source "${boDirLib}"/getAbsolutePath.bash
 source "${boDirLib}"/getTemporaryFile.bash
 source "${boDirLib}"/gitStatusIsClean.bash
 source "${boDirLib}"/logging.bash
 source "${boDirLib}"/maybeCreateDirectoryTree.bash
 source "${boDirLib}"/maybeDeleteDirectoryTree.bash
 source "${boDirLib}"/maybeDeleteFile.bash
-source "${boDirLib}"/parentOf.bash
 source "${boDirLib}"/prepareToSourceOptional.bash
 source "${boDirLib}"/requireArguments.bash
 source "${boDirLib}"/requireCommand.bash

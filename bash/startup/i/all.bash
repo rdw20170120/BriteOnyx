@@ -5,19 +5,19 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-source "$(dirname "${BASH_SOURCE[0]}")"/terminal.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/color.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/terminal.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/color.bash
 logTrace "Connected to a TTY, configuring for user interaction"
-source "$(dirname "${BASH_SOURCE[0]}")"/bash.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/dircolors.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/fd.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/ghostty.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/git.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/grep.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/less.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/ls.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/nvim.bash
-source "$(dirname "${BASH_SOURCE[0]}")"/rg.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/bash.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/dircolors.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/fd.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/ghostty.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/git.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/grep.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/less.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/ls.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/nvim.bash
+source "$(parentOf "${BASH_SOURCE[0]}")"/rg.bash
 
 ###################################################################################################
 : <<'DisabledContent'

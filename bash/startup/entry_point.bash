@@ -7,54 +7,49 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-# Configure for XDG standard
-_Script="${boFramework}"/bash/startup/XDG.bash
-require "${_Script}" && source "${_Script}"
+# Establish reference to library of Bash functions
+# shellcheck disable=SC2154
+boDirLib=${boFramework}/bash/lib
+declare -rx boDirLib
 
-declare -rx boFileTemplateGit=${XDG_CONFIG_HOME}/git/template.txt
+# Configure for XDG standard
+# shellcheck disable=SC2154
+source "$(require "${boFramework}"/bash/startup/XDG.bash)"
 
 # User portion of PATH
 # shellcheck disable=SC2154
 boPathExeFramework=${boFramework}/bash/bin
 declare -rx boPathExeFramework
-boPathExeUserGeneral=${HOME}/bin
-declare -rx boPathExeUserGeneral
 boPathExeUserBash=${XDG_CONFIG_HOME}/bash/bin
 declare -rx boPathExeUserBash
+boPathExeUserGeneral=${HOME}/bin
+declare -rx boPathExeUserGeneral
 # Order matters!
-# Framework-specific executables override user executables (for now)
+# Framework-specific executables override user executables
 # Bash-specific executables override general executables
 boPathUser=${boPathExeFramework}
 boPathUser+=":${boPathExeUserBash}"
 boPathUser+=":${boPathExeUserGeneral}"
 declare -x boPathUser
 
-# Establish reference to library of Bash functions
-# shellcheck disable=SC2154
-boDirLib=${boFramework}/bash/lib
-declare -rx boDirLib
-
 # Run all "first" scripts to establish the foundation of Bash environment
-_Script="${boFramework}"/bash/startup/f/all.bash
-require "${_Script}" && source "${_Script}"
+source "$(require "${boFramework}"/bash/startup/f/all.bash)"
 
 if [[ -t 1 ]]; then
     # Since we have a TTY (terminal) connected, and presumably a user,
     # run all "interaction" scripts
-    _Script="${boFramework}"/bash/startup/i/all.bash
-    require "${_Script}" && source "${_Script}"
+    source "$(require "${boFramework}"/bash/startup/i/all.bash)"
 fi
 
 # Run all "last" scripts to finish Bash environment
-_Script="${boFramework}"/bash/startup/l/all.bash
-require "${_Script}" && source "${_Script}"
+source "$(require "${boFramework}"/bash/startup/l/all.bash)"
 
 logDone "BriteOnyx framework successfully activated in ${boFramework}"
 
 ###################################################################################################
 : <<'DisabledContent'
-# NOTE: Debugging
-# source $(dirname ${BASH_SOURCE})/onError.bash
+# TODO: debugging
+# source $(parentOf ${BASH_SOURCE})/onError.bash
 # trap 'onError "LINENO" "BASH_LINENO" "${BASH_COMMAND}" "${?}"' ERR
 # trap 'echo "Hello there, I caught exit $? from $(caller), ${FUNC_NAME}, ${LINENO}, ${BASH_LINENO}"' EXIT
 
