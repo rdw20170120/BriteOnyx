@@ -11,9 +11,9 @@ set -EeTuo pipefail
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
 
+# NOTE: include only those functions actually used in this script
 # Dependencies:
 # shellcheck disable=SC2154
-# NOTE: include only those functions actually used in this script
 source "${boDirLib}"/abortOnFail.bash
 source "${boDirLib}"/changeDirectory.bash
 source "${boDirLib}"/changeDirectoryIn.bash
@@ -43,16 +43,16 @@ source "${boDirLib}"/requireVariable.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    # DESCRIPTION
-    logCall _main
-    requireArguments $# 0
-    logArgument "$1" 1 'DESCRIPTION'
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
+    # TODO: DESCRIPTION
+    # TODO: requireArguments $# 0
+    # TODO: logArgument "$1" 1 'DESCRIPTION'
 
     logActivity 'DESCRIBE'
 
     # TODO: implement
 
-    logDone 'DESCRIBE.'
+    logDone 'DESCRIBE'
     return 0
 }
 

@@ -5,8 +5,8 @@ set -EeTuo pipefail
 # This script does NOT use the BriteOnyx framework
 
 _main() {
-    # DESCRIPTION
-    # $1 = DESCRIPTION
+    # TODO: DESCRIPTION
+    # TODO: $1 = DESCRIPTION
 
     # TODO: implement
 

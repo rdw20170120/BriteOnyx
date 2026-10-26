@@ -7,13 +7,11 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-requireDirectoryIn prjDirRoot
-
 # This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
+
+requireDirectoryIn prjDirLib
 # shellcheck disable=SC2154
 source "${prjDirLib}"/project_override.bash
 
@@ -29,13 +27,13 @@ source "${boDirLib}"/requireFileIn.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    logCall _main
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
     project-lint
     project-format
 
-    logActivity "Committing staged source file changes"
+    logActivity 'Committing staged source file changes'
 
     requireCommand git
     requireFileIn boFileTemplateGit
@@ -43,7 +41,7 @@ _main() {
     changeDirectoryIn prjDirRoot
     execute git commit
 
-    logDone "Staged source file changes committed."
+    logDone 'Staged source file changes committed'
     return 0
 }
 

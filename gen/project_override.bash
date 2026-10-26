@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
@@ -12,9 +12,9 @@ logExecuting "${BASH_SOURCE[0]}"
 logDebug 'Overriding some configuration for this project for this Bash session'
 
 # Modify PATH for this project
+# NOTE: project scripts override the rest of PATH
 requireDirectoryIn prjPathBin
 requireVariable PATH
-# NOTE: project scripts override the rest of PATH
 # shellcheck disable=SC2154
 PATH=${prjPathBin}:${PATH}
 export PATH

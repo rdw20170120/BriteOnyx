@@ -7,19 +7,16 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-# TODO: improve this to give a meaningful message
-requireDirectoryIn prjDirRoot
+[[ -v prjDirRoot ]] ||
+    echo 'FATAL: Please execute "source source_me.bash" first, to activate this project' &&
+    exit 1
 
-# This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
+# This script uses the BriteOnyx framework
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
-# shellcheck disable=SC2154
-source "${prjDirLib}"/project_override.bash
 
-# Dependencies:
 # NOTE: include only those functions actually used in this script
+# Dependencies:
 # shellcheck disable=SC2154
 source "${boDirLib}"/abortOnFail.bash
 source "${boDirLib}"/changeDirectory.bash
@@ -49,17 +46,20 @@ source "${boDirLib}"/requireVariable.bash
 
 logExecuting "${BASH_SOURCE[0]}"
 
+# shellcheck disable=SC2154
+source "${prjDirLib}"/project_override.bash
+
 _main() {
-    # DESCRIPTION
-    logCall _main
-    requireArguments $# 0
-    logArgument "$1" 1 'DESCRIPTION'
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
+    # TODO: DESCRIPTION
+    # TODO: requireArguments $# 0
+    # TODO: logArgument "$1" 1 'DESCRIPTION'
 
     logActivity 'DESCRIBE'
 
     logWarn 'TODO: implement'
 
-    logDone 'DESCRIBE.'
+    logDone 'DESCRIBE'
     return 0
 }
 

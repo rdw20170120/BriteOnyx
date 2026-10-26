@@ -20,6 +20,7 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _describeColor() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Write a line describing a terminal color
     # using `tput`
     # and by directly using ANSI escape sequences
@@ -27,6 +28,9 @@ _describeColor() {
     # $2 = foreground color ANSI code
     # $3 = name for typical ANSI color at this index
     requireArguments $# 3
+    # TODO: logArgument "$1" 1 'DESCRIPTION'
+    # TODO: logArgument "$1" 1 'DESCRIPTION'
+    # TODO: logArgument "$1" 1 'DESCRIPTION'
 
     requireCommand tput
 
@@ -40,8 +44,8 @@ _describeColor() {
 }
 
 _main() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Describe current terminal
-    logCall _main
     requireArguments $# 0
 
     requireCommand ghostty

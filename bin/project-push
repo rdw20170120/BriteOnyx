@@ -7,13 +7,11 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-requireDirectoryIn prjDirRoot
-
 # This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
+
+requireDirectoryIn prjDirLib
 # shellcheck disable=SC2154
 source "${prjDirLib}"/project_override.bash
 
@@ -29,13 +27,13 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    logCall _main
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
     project-clean
     project-quality
 
-    logActivity "Pushing committed project file changes to remote repository"
+    logActivity 'Pushing committed project file changes to remote repository'
 
     requireCommand git
 
@@ -43,10 +41,10 @@ _main() {
     if gitStatusIsClean "${prjDirRoot}"; then
         execute git push
     else
-        abortOnFail 2 "Push aborted since Git working directory is dirty"
+        abortOnFail 2 'Push aborted since Git working directory is dirty'
     fi
 
-    logDone "Project file changes pushed to remote repository."
+    logDone 'Project file changes pushed to remote repository'
     return 0
 }
 

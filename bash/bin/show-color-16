@@ -20,8 +20,8 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Show 16-color palette in current terminal color theme
-    logCall _main
     requireArguments $# 0
 
     requireCommand seq

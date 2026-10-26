@@ -22,9 +22,9 @@ source "${boDirLib}"/requireDirectory.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _compare() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Compare file contents of directories $1 & $2, recursively
     # TODO: Enhance file/directory handling for robustness
-    logCall _compare
     requireArguments $# 2
     logArgument "$1" 1 'first directory'
     logArgument "$2" 2 'second directory'
@@ -69,8 +69,9 @@ _compare() {
 }
 
 _parseArguments() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Parse command-line arguments, if any
-    logCall _parseArguments
+    # NO: requireArguments $# 0
 
     logTrace "Received $# command-line argument(s):  $*"
     if [[ $# -eq 0 ]]; then
@@ -103,7 +104,7 @@ _parseArguments() {
 
 # shellcheck disable=SC2120
 _showUsage() {
-    logCall _showUsage
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
     logWarn "Usage:  trees-diff [OPTION...] DIRECTORY1 DIRECTORY2"
@@ -132,8 +133,8 @@ USAGE
 }
 
 _main() {
-    logCall _main
-    # NO: requireArguments
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
+    requireArguments $# 0
 
     logActivity "Comparing file contents in two directory trees"
 

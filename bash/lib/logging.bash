@@ -1,13 +1,17 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-# Declare only once--the first time--otherwise skip
-declare -F _log >/dev/null && return 0
+# Uncomment for debugging/development
+# boLogLevel=7
+# export boLogLevel
 
-# Remember that we executed this script, but not by (problematic) logging during shell startup
-touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
+# Skip if already declared
+>/dev/null declare -F _log && return 0
+
+remember "${BASH_SOURCE[0]}"
+
 # NO: logExecuting "${BASH_SOURCE[0]}"
 
 [[ -v boLogLevel ]] || export boLogLevel=5
@@ -49,7 +53,7 @@ _log() {
         1>&2 echo "${Control}[${Timestamp} ${Priority}] ${Text}${Reset}"
     fi
 }
-export -f _log
+declare -frx _log
 
 logBad() {
     # Log message $1 at BAD priority level
@@ -57,7 +61,7 @@ logBad() {
     requireArguments $# 1
     _log "$1" "B" 1 "${_boColorBad}"
 }
-export -f logBad
+declare -frx logBad
 
 logDebug() {
     # Log message $1 at DEBUG priority level
@@ -65,7 +69,7 @@ logDebug() {
     requireArguments $# 1
     _log "$1" "D" 7 "${_boColorDebug}"
 }
-export -f logDebug
+declare -frx logDebug
 
 logError() {
     # Log message $1 at ERROR priority level
@@ -73,7 +77,7 @@ logError() {
     requireArguments $# 1
     _log "$1" "E" 2 "${_boColorError}"
 }
-export -f logError
+declare -frx logError
 
 logGood() {
     # Log message $1 at GOOD priority level
@@ -81,7 +85,7 @@ logGood() {
     requireArguments $# 1
     _log "$1" "G" 5 "${_boColorGood}"
 }
-export -f logGood
+declare -frx logGood
 
 logInfo() {
     # Log message $1 at INFO priority level
@@ -89,7 +93,7 @@ logInfo() {
     requireArguments $# 1
     _log "$1" "I" 4 "${_boColorInfo}"
 }
-export -f logInfo
+declare -frx logInfo
 
 logTrace() {
     # Log message $1 at TRACE priority level
@@ -97,7 +101,7 @@ logTrace() {
     requireArguments $# 1
     _log "$1" "T" 6 "${_boColorTrace}"
 }
-export -f logTrace
+declare -frx logTrace
 
 logWarn() {
     # Log message $1 at WARN priority level
@@ -105,7 +109,7 @@ logWarn() {
     requireArguments $# 1
     _log "$1" "W" 3 "${_boColorWarn}"
 }
-export -f logWarn
+declare -frx logWarn
 
 ###################################################################################################
 
@@ -115,7 +119,7 @@ logAction() {
     requireArguments $# 1
     logInfo "$1"
 }
-export -f logAction
+declare -frx logAction
 
 logActivity() {
     # Log message $1 about a script activity
@@ -123,7 +127,7 @@ logActivity() {
     requireArguments $# 1
     logInfo "$1..."
 }
-export -f logActivity
+declare -frx logActivity
 
 logArgument() {
     # Log argument with value $1, index $2, described as $3
@@ -133,7 +137,7 @@ logArgument() {
     requireArguments $# 3
     logTrace "$2 $3 = '$1'"
 }
-export -f logArgument
+declare -frx logArgument
 
 logCall() {
     # Log message about calling function $1
@@ -141,7 +145,7 @@ logCall() {
     requireArguments $# 1
     logTrace "Called $1"
 }
-export -f logCall
+declare -frx logCall
 
 logDone() {
     # Log message $1 about successfully completing a script activity
@@ -149,7 +153,7 @@ logDone() {
     requireArguments $# 1
     logGood "$1"
 }
-export -f logDone
+declare -frx logDone
 
 logExecuting() {
     # Log message about executing $1
@@ -157,7 +161,7 @@ logExecuting() {
     requireArguments $# 1
     logTrace "Executing $1"
 }
-export -f logExecuting
+declare -frx logExecuting
 
 logUnavailable() {
     # Log message that command $1 is unavailable
@@ -165,7 +169,7 @@ logUnavailable() {
     requireArguments $# 1
     logTrace "Skipping command, missing:  $1"
 }
-export -f logUnavailable
+declare -frx logUnavailable
 
 logValue() {
     # Log the value $1 described as $2
@@ -174,7 +178,7 @@ logValue() {
     requireArguments $# 2
     logDebug "'$2' = '$1'"
 }
-export -f logValue
+declare -frx logValue
 
 logVariable() {
     # Log the name and value of variable $1
@@ -185,7 +189,7 @@ logVariable() {
     requireVariable "${Name}"
     logValue "${!Name}" "${Name}"
 }
-export -f logVariable
+declare -frx logVariable
 
 # Dependencies:
 # shellcheck disable=SC2154

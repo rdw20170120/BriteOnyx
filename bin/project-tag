@@ -7,19 +7,15 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-# TODO: improve this to give a meaningful message
-requireDirectoryIn prjDirRoot
-
 # This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
+
+requireDirectoryIn prjDirLib
 # shellcheck disable=SC2154
 source "${prjDirLib}"/project_override.bash
 
 # Dependencies:
-# NOTE: include only those functions actually used in this script
 # shellcheck disable=SC2154
 source "${boDirLib}"/abortOnFail.bash
 source "${boDirLib}"/changeDirectoryIn.bash
@@ -32,10 +28,10 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Apply a Git tag
     # Takes 0-1 arguments
-    logCall _main
-    # NO: requireArguments
+    # NO: requireArguments $# 0
 
     requireCommand git
 
@@ -56,9 +52,9 @@ _main() {
                 --annotate "${_Tag}" \
                 --message="Tag ${_Tag}"
 
-            logDone "Repository tagged."
+            logDone 'Repository tagged'
         else
-            abortOnFail 2 "Tagging aborted since Git working directory is dirty"
+            abortOnFail 2 'Tagging aborted since Git working directory is dirty'
         fi
     else
         abortOnFail 1 "Requires 0-1 arguments instead of $#"

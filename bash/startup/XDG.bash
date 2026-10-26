@@ -1,12 +1,22 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-# Remember that we executed this script, but not by (problematic) logging during shell startup
-touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
+remember "${BASH_SOURCE[0]}"
 
-# TODO: Use this script instead to test XDG configuration values
+# Apply XDG standard defaults to make them explicit
+# NO: XDG_RUNTIME_HOME, too complicated
+declare -x XDG_CACHE_HOME=${HOME}/.cache
+declare -x XDG_CONFIG_DIRS=/etc/xdg
+declare -x XDG_CONFIG_HOME=${HOME}/.config
+# TODO: move Ghostty reference
+declare -x XDG_DATA_DIRS=/usr/local/share:/usr/share:/Applications/Utilities/Ghostty.app/Contents/Resources
+declare -x XDG_DATA_HOME=${HOME}/.local/share
+declare -x XDG_STATE_HOME=${HOME}/.local/state
+
+# Described in standard, but not given a name
+declare -x XDG_ExeHome=${HOME}/.local/bin
 
 ###################################################################################################
 : <<'DisabledContent'

@@ -7,13 +7,11 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-requireDirectoryIn prjDirRoot
-
 # This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
+
+requireDirectoryIn prjDirLib
 # shellcheck disable=SC2154
 source "${prjDirLib}"/project_override.bash
 
@@ -31,10 +29,12 @@ source "${boDirLib}"/requireFile.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _generateFile() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Generate temporary source file $2 from example source file $1
     # $1 = existing example source file
     # $2 = generated temporary source file for later synchronization
     requireArguments $# 2
+    # logArgument
     local -r _FileGenerated=$2
     local -r _FileExample=$1
 
@@ -53,6 +53,7 @@ _generateFile() {
 
 # shellcheck disable=SC2120
 _generateFiles() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
     # shellcheck disable=SC2154
@@ -155,10 +156,10 @@ _generateFiles() {
 }
 
 _main() {
-    logCall _main
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
-    logActivity "Generating temporary source files for manual synchronization"
+    logActivity 'Generating temporary source files for manual synchronization'
 
     # NOTE: this script uses VisualDiffer, installed via Homebrew
     # REF: https://wiki.visualdiffer.com/
@@ -176,7 +177,7 @@ _main() {
     # shellcheck disable=SC2154
     execute "${_Exe}" --focus --no-warning --wait "${prjDirRoot}" "${_DirGenerate}"
 
-    logDone "Generated source files synchronized (if YOU did your job)."
+    logDone 'Generated source files synchronized (if YOU did your job)'
     return 0
 }
 

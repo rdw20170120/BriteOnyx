@@ -18,10 +18,12 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Show 256-color palette in current terminal color theme
     # $1 = optional text
     # $2 = optional minimum background color index (at least 0)
     # $3 = optional maximum background color index (at most 255)
+    # NO: requireArguments $# 0
     requireCommand seq
     requireCommand tput
 

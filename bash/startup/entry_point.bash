@@ -1,52 +1,65 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
-# shellcheck disable=SC1091,SC2096
+#!/usr/bin/env bash -c 'MUST be invoked via source'
+# shellcheck disable=SC1090,SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-# Remember that we executed this script, but not by (problematic) logging during shell startup
-touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
-
 >/dev/null umask -S u=rwx,g=,o=
 
-source "${XDG_CONFIG_HOME}"/BO.env
+remember "${BASH_SOURCE[0]}"
 
-# TODO: Customize command-line editing
-# TODO: Customize command-line searching
-# TODO: Implement support for scripts to properly use `trap` to cleanup
-# TODO: Migrate from using `alias` to creating Bash functions
+# Configure for XDG standard
+_Script="${boFramework}"/bash/startup/XDG.bash
+require "${_Script}" && source "${_Script}"
+
+declare -rx boFileTemplateGit=${XDG_CONFIG_HOME}/git/template.txt
+
+# User portion of PATH
+# shellcheck disable=SC2154
+boPathExeFramework=${boFramework}/bash/bin
+declare -rx boPathExeFramework
+boPathExeUserGeneral=${HOME}/bin
+declare -rx boPathExeUserGeneral
+boPathExeUserBash=${XDG_CONFIG_HOME}/bash/bin
+declare -rx boPathExeUserBash
+# Order matters!
+# Framework-specific executables override user executables (for now)
+# Bash-specific executables override general executables
+boPathUser=${boPathExeFramework}
+boPathUser+=":${boPathExeUserBash}"
+boPathUser+=":${boPathExeUserGeneral}"
+declare -x boPathUser
 
 # Establish reference to library of Bash functions
 # shellcheck disable=SC2154
-export boDirLib=${boFramework}/bash/lib
+boDirLib=${boFramework}/bash/lib
+declare -rx boDirLib
 
 # Run all "first" scripts to establish the foundation of Bash environment
-source "$(dirname "${BASH_SOURCE[0]}")"/f/all.bash
+_Script="${boFramework}"/bash/startup/f/all.bash
+require "${_Script}" && source "${_Script}"
 
 if [[ -t 1 ]]; then
     # Since we have a TTY (terminal) connected, and presumably a user,
-    # Run all "interaction" scripts
-    source "$(dirname "${BASH_SOURCE[0]}")"/i/all.bash
+    # run all "interaction" scripts
+    _Script="${boFramework}"/bash/startup/i/all.bash
+    require "${_Script}" && source "${_Script}"
 fi
 
 # Run all "last" scripts to finish Bash environment
-source "$(dirname "${BASH_SOURCE[0]}")"/l/all.bash
-
-# Update `boFramework` to an absolute path
-source "${boDirLib}"/getAbsolutePath.bash
-boFramework=$(getAbsolutePath "${boFramework}")
-export boFramework
+_Script="${boFramework}"/bash/startup/l/all.bash
+require "${_Script}" && source "${_Script}"
 
 logDone "BriteOnyx framework successfully activated in ${boFramework}"
 
 ###################################################################################################
 : <<'DisabledContent'
-Troubleshooting Bash:
-  set -o verbose; set -o xtrace
-  # Code to troubleshoot
-  set +o verbose; set +o xtrace
-
 # NOTE: Debugging
 # source $(dirname ${BASH_SOURCE})/onError.bash
 # trap 'onError "LINENO" "BASH_LINENO" "${BASH_COMMAND}" "${?}"' ERR
 # trap 'echo "Hello there, I caught exit $? from $(caller), ${FUNC_NAME}, ${LINENO}, ${BASH_LINENO}"' EXIT
+
+Troubleshooting Bash:
+  set -o verbose; set -o xtrace
+  # Code to troubleshoot
+  set +o verbose; set +o xtrace
 DisabledContent

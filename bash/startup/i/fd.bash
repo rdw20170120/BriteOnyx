@@ -1,13 +1,11 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-# Remember that we executed this script, but not by (problematic) logging during shell startup
-touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
+remember "${BASH_SOURCE[0]}"
 
-alias base-fd='fd'
-alias fd='fd --follow --hidden --no-ignore-vcs --one-file-system'
+alias fd='fd --follow --hidden --ignore-vcs --one-file-system'
 
 ###################################################################################################
 : <<'DisabledContent'

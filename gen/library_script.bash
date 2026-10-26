@@ -1,30 +1,34 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-# Declare only once--the first time--otherwise skip
-declare -F FUNCTION_NAME >/dev/null && return 0
+# Uncomment for debugging/development
+# boLogLevel=7
+# export boLogLevel
 
-# Remember that we executed this script, but not by (problematic) logging during shell startup
-touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
-logExecuting "${BASH_SOURCE[0]}"
+# Skip if already declared
+>/dev/null declare -F FUNCTION_NAME && return 0
+
+remember "${BASH_SOURCE[0]}"
+
 # NO: logExecuting "${BASH_SOURCE[0]}"
+logExecuting "${BASH_SOURCE[0]}"
 
 FUNCTION_NAME() {
-    # DESCRIPTION
-    logCall FUNCTION_NAME
-    requireArguments $# 0
-    logArgument "$1" 1 'DESCRIPTION'
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
+    # TODO: DESCRIPTION
+    # TODO: requireArguments $# 0
+    # TODO: logArgument "$1" 1 'DESCRIPTION'
 
     # TODO: implement
 
     return 0
 }
-declare -fx FUNCTION_NAME
+declare -frx FUNCTION_NAME
 
-# Dependencies:
 # NOTE: include only those functions actually used in this script
+# Dependencies:
 # shellcheck disable=SC2154
 source "${boDirLib}"/abortOnFail.bash
 source "${boDirLib}"/changeDirectory.bash

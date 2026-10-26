@@ -19,8 +19,8 @@ source "${boDirLib}"/requireArguments.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Show logging examples
-    logCall _main
     requireArguments $# 0
 
     # shellcheck disable=SC2034

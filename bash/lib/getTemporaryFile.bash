@@ -1,13 +1,17 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
-# Declare only once--the first time--otherwise skip
-declare -F getTemporaryFile >/dev/null && return 0
+# Uncomment for debugging/development
+# boLogLevel=7
+# export boLogLevel
 
-# Remember that we executed this script, but not by (problematic) logging during shell startup
-touch "$(dirname "${BASH_SOURCE[0]}")"/.ran_"$(basename "${BASH_SOURCE[0]}")"
+# Skip if already declared
+>/dev/null declare -F getTemporaryFile && return 0
+
+remember "${BASH_SOURCE[0]}"
+
 logExecuting "${BASH_SOURCE[0]}"
 
 getTemporaryFile() {
@@ -25,7 +29,7 @@ getTemporaryFile() {
 
     return 0
 }
-export -f getTemporaryFile
+declare -frx getTemporaryFile
 
 # Dependencies:
 # shellcheck disable=SC2154

@@ -7,18 +7,17 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-requireDirectoryIn prjDirRoot
+[[ -v prjDirRoot ]] ||
+    echo 'FATAL: Please execute "source source_me.bash" first, to activate this project' &&
+    exit 1
 
-# This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
+# This script uses the BriteOnyx framework
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
-# shellcheck disable=SC2154
-source "${prjDirLib}"/project_override.bash
 
 # Dependencies:
 # shellcheck disable=SC2154
+source "${boDirLib}"/abortOnFail.bash
 source "${boDirLib}"/execute.bash
 source "${boDirLib}"/logging.bash
 source "${boDirLib}"/maybeDeleteFile.bash
@@ -28,27 +27,33 @@ source "${boDirLib}"/requireDirectoryIn.bash
 
 logExecuting "${BASH_SOURCE[0]}"
 
+# shellcheck disable=SC2154
+source "${prjDirLib}"/project_override.bash
+
 _checkBash() {
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     # Check Bash source file(s) $1 using ShellCheck
     # $1=path or glob pattern of source file(s) to check
-    logCall _checkBash
     requireArguments $# 1
-    local -r Pattern=$1
+    # logArgument
+    local -r _Pattern=$1
 
-    logDebug "Linting source file(s) ${Pattern}"
-    # Run command as a condition so that we can choose what to do with any failures (rather than exit)
+    requireCommand shellcheck
+
+    logDebug "Linting source file(s) ${_Pattern}"
+
     # TODO: Do I need to force Bash if the scripts have Vim modelines?
     # shellcheck disable=SC2086
-    >>"${_FileLog}" execute shellcheck --shell=bash ${Pattern}
+    >>"${_FileLog}" execute shellcheck --shell=bash ${_Pattern}
 
     return 0
 }
 
 _main() {
-    logCall _main
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
-    logActivity "Linting project files"
+    logActivity 'Linting project files'
 
     requireCommand shellcheck
     requireDirectoryIn prjDirRoot
@@ -73,7 +78,7 @@ _main() {
     # TODO: improve error-handling by scanning log file for errors
     logInfo "Check log file for any issues: ${_FileLog}"
 
-    logDone "Linting project files is complete."
+    logDone 'Linting project files is complete'
     return 0
 }
 

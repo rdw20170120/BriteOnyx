@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -c NOTE: only execute via 'source'
+#!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC1090,SC1091,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
@@ -9,15 +9,15 @@ set -EeTuo pipefail
 
 # NOTE: override BriteOnyx framework for local development
 # since this is the BriteOnyx project repository
-boFramework=$(dirname "${BASH_SOURCE[0]}")
-export boFramework
+boFramework=$(getAbsolutePath "${BASH_SOURCE[0]}")
+declare -rx boFramework
 
 # This script uses the BriteOnyx framework
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
 
-# Dependencies:
 # NOTE: include only those functions actually used in this script
+# Dependencies:
 # shellcheck disable=SC2154
 source "${boDirLib}"/changeDirectoryIn.bash
 source "${boDirLib}"/forbidVariable.bash
@@ -29,18 +29,18 @@ source "${boDirLib}"/requireDirectoryIn.bash
 
 logExecuting "${BASH_SOURCE[0]}"
 
-logActivity "Activating this project for this Bash session"
+logActivity 'Activating this project for this Bash session'
 
 forbidVariable prjDirRoot
 prjDirRoot=$(dirname "${BASH_SOURCE[0]}")
 prjDirRoot=$(getAbsolutePath "${prjDirRoot}")
-export prjDirRoot
+declare -rx prjDirRoot
 logVariable prjDirRoot
 requireDirectoryIn prjDirRoot
 
 forbidVariable prjDirTmp
-prjDirTmp=${prjDirRoot}/.tmp
-export prjDirTmp
+prjDirTmp=$(getAbsolutePath "${prjDirRoot}"/.tmp)
+declare -rx prjDirTmp
 logVariable prjDirTmp
 maybeCreateDirectoryTree "${prjDirTmp}"
 

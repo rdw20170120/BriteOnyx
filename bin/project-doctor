@@ -7,13 +7,11 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
-# Require project to already be activated (via `${prjDirRoot}/source_me.bash`)
-requireDirectoryIn prjDirRoot
-
 # This script uses the BriteOnyx framework, as customized for this project
-source "${HOME}"/.config/XDG.env
 # shellcheck disable=SC2154
 source "${boFramework}"/bash/startup/from_script.bash
+
+requireDirectoryIn prjDirLib
 # shellcheck disable=SC2154
 source "${prjDirLib}"/project_override.bash
 
@@ -26,16 +24,18 @@ source "${boDirLib}"/requireCommand.bash
 logExecuting "${BASH_SOURCE[0]}"
 
 _main() {
-    logCall _main
+    executing "${BASH_SOURCE[0]}" "${FUNCNAME[0]}"
     requireArguments $# 0
 
-    logActivity "The doctor will see you now"
+    logActivity 'The doctor will see you now'
 
-    # TODO: verify this list of commands is complete
+    # TODO: verify this list is complete
     # TODO: research which commands can safely be "assumed" (e.g., `dirname`, etc?)
+    requireCommand basename
     requireCommand cat
     requireCommand ctags
     requireCommand diff
+    requireCommand dirname
     requireCommand ghostty
     requireCommand git
     requireCommand gls
@@ -48,7 +48,7 @@ _main() {
     requireCommand tput
     requireCommand tset
 
-    logDone "Your check-up is complete."
+    logDone 'Your check-up is complete'
     return 0
 }
 

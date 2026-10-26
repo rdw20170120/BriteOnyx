@@ -28,4 +28,7 @@ Follow [my Conventional Commits](./home/.config/git/template.txt)
 1. [ ] ? chore(bash): for each variant of Bash syntax, chose a preference
 1. [ ] ? chore(bash): implement checks for Bash scripts that contain unwanted naming or syntax
 1. [ ] ? chore(bash): prefer Bash `declare` over `local` or `typeset`
+1. [ ] ? feat(bash): customize command-line editing
+1. [ ] ? feat(bash): customize command-line searching
+1. [ ] ? feat(bash): implement support for scripts to properly use `trap` to cleanup
 1. [ ] A feat(bash): extract BriteOnyx from other project repositories
