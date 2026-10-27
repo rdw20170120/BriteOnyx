@@ -10,6 +10,11 @@ set -EeTuo pipefail
 boLogLevel=7
 declare -x boLogLevel
 
+# Recondition shell for the user
+set +o errexit
+set +o errtrace
+# TODO: verify reconditioning
+
 ###############################################################################
 : <<'DisabledContent'
 # NOTE: override BriteOnyx framework for local development
@@ -69,13 +74,6 @@ changeDirectoryIn prjDirRoot
 logDone "Project successfully activated in ${prjDirRoot}"
 
 unset _Script
-
-# TODO: RESEARCH: how can I enhance BriteOnyx around these?
-# Disable `errexit` in user's session
-# TODO: in an `EXIT` `trap`
-set +o errexit
-# Disable `trap` in user's session
-trap --
 
 Troubleshooting Bash:
   set -o verbose; set -o xtrace

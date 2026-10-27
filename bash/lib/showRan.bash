@@ -34,7 +34,7 @@ showRan() {
     # -r = --reverse
     # -t = --time=mtime
 
-    logActivity "Showing which BriteOnyx showRan scripts ran"
+    logActivity "Showing when BriteOnyx startup scripts ran"
 
     requireCommand fd
     requireCommand gls

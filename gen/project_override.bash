@@ -9,6 +9,8 @@ logExecuting "${BASH_SOURCE[0]}"
 # This script MUST be called from each project script,
 # since each executes in a new subshell
 
+###############################################################################
+: <<'DisabledContent'
 logDebug 'Overriding some configuration for this project for this Bash session'
 
 # Modify PATH for this project
@@ -23,8 +25,6 @@ logVariable PATH
 # Disable Bash command hashing so that PATH works dynamically
 set +h
 
-###############################################################################
-: <<'DisabledContent'
 Troubleshooting Bash:
   set -o verbose; set -o xtrace
   # Code to troubleshoot

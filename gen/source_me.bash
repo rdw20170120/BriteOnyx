@@ -7,6 +7,8 @@ set -EeTuo pipefail
 # boLogLevel=7
 # export boLogLevel
 
+###############################################################################
+: <<'DisabledContent'
 # NOTE: override BriteOnyx framework for local development
 # since this is the BriteOnyx project repository
 boFramework=$(absolute "${BASH_SOURCE[0]}")
@@ -61,8 +63,6 @@ logDone "Project successfully activated in ${prjDirRoot}"
 
 changeDirectoryIn prjDirRoot
 
-###############################################################################
-: <<'DisabledContent'
 Troubleshooting Bash:
   set -o verbose; set -o xtrace
   # Code to troubleshoot

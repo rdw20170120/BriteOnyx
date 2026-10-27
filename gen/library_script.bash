@@ -53,6 +53,7 @@ source "${boDirLib}"/requireScript.bash
 source "${boDirLib}"/requireValue.bash
 source "${boDirLib}"/requireValueIn.bash
 source "${boDirLib}"/requireVariable.bash
+source "${boDirLib}"/showRan.bash
 
 ###################################################################################################
 : <<'DisabledContent'

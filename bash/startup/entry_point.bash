@@ -7,18 +7,31 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
+# Establish reference to library of Bash functions
 # shellcheck disable=SC2154
-source "$(require "${boFramework}"/bash/startup/l/ran.bash)"
+boDirLib=${boFramework}/bash/lib
+declare -rx boDirLib
+
+# shellcheck disable=SC2154
+source "$(require "${boDirLib}"/checkUsability.bash)"
+source "$(require "${boDirLib}"/showRan.bash)"
+
+# Reconfigure for usability
+set +o errexit
+set +o errtrace
+set +o functrace
+set +o hashall
+set +o interactive-comments
+# TODO: refactor to my customizations
+set +o emacs
+set -o vi
+checkUsability
 
 # shellcheck disable=SC2154
 logDone "BriteOnyx framework successfully activated in ${boFramework}"
 
 ###################################################################################################
 : <<'DisabledContent'
-# Establish reference to library of Bash functions
-# shellcheck disable=SC2154
-boDirLib=${boFramework}/bash/lib
-declare -rx boDirLib
 
 # User portion of PATH
 # shellcheck disable=SC2154
