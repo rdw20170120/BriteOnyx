@@ -1,5 +1,5 @@
 #!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC1090,SC1091,SC2096
+# shellcheck disable=SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
 
@@ -8,8 +8,10 @@ set -EeTuo pipefail
 
 # Uncomment for debugging/development
 boLogLevel=7
-export boLogLevel
+declare -x boLogLevel
 
+###############################################################################
+: <<'DisabledContent'
 # NOTE: override BriteOnyx framework for local development
 # since this is the BriteOnyx project repository
 boFramework=$(parentOf "${BASH_SOURCE[0]}")
@@ -68,8 +70,6 @@ logDone "Project successfully activated in ${prjDirRoot}"
 
 unset _Script
 
-###############################################################################
-: <<'DisabledContent'
 # TODO: RESEARCH: how can I enhance BriteOnyx around these?
 # Disable `errexit` in user's session
 # TODO: in an `EXIT` `trap`

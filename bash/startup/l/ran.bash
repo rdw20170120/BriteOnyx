@@ -5,18 +5,17 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-declare -F ran >/dev/null && return 0
+declare -F showRan >/dev/null && return 0
 
 # shellcheck disable=SC2154
 source "${boDirLib}"/logging.bash
+source "${boDirLib}"/requireArguments.bash
 source "${boDirLib}"/requireCommand.bash
-source "${boDirLib}"/requireVariable.bash
+source "${boDirLib}"/requireDirectoryIn.bash
+source "${boDirLib}"/requireValueIn.bash
 
-_boPrefixRan=.ran_
-export _boPrefixRan
-
-startup() {
-    # Show tracking files touched during startup script execution
+showRan() {
+    # Show files tracking which scripts ran during BriteOnyx startup
     requireArguments $# 0
 
     # 'fd' options:
@@ -35,16 +34,16 @@ startup() {
     # -r = --reverse
     # -t = --time=mtime
 
-    logActivity "Showing which BriteOnyx startup scripts ran"
+    logActivity "Showing which BriteOnyx showRan scripts ran"
 
     requireCommand fd
     requireCommand gls
-    requireVariable _boPrefixRan
-    requireVariable HOME
-    requireVariable XDG_CONFIG_HOME
-    requireVariable boFormatDateGls
-    requireVariable boFramework
-    requireVariable boHome
+    requireDirectoryIn HOME
+    requireDirectoryIn XDG_CONFIG_HOME
+    requireDirectoryIn boFramework
+    requireDirectoryIn boHome
+    requireValueIn boFormatDateGls
+    requireValueIn boPrefixRan
 
     declare _CmdFd
     _CmdFd=$(which fd)
@@ -53,6 +52,7 @@ startup() {
     _CmdGls=$(which gls)
     declare -r _CmdGls
 
+    # TODO: use `execute`
     declare _Prefix=${_CmdFd}
     _Prefix+=' --exclude .git'
     _Prefix+=' --no-ignore-vcs'
@@ -61,7 +61,8 @@ startup() {
     _Prefix+=' -aFHILs'
     declare -r _Prefix
 
-    declare _Suffix=${_boPrefixRan}
+    # shellcheck disable=SC2154
+    declare _Suffix=${boPrefixRan}
     _Suffix+=' -X'
     _Suffix+=" ${_CmdGls}"
     # shellcheck disable=SC2154
@@ -93,18 +94,10 @@ startup() {
         ${_Command2}
     } | awk '{print $6, $7}' | sort
 }
-export -f startup
+declare -frx showRan
 
 ###################################################################################################
 : <<'DisabledContent'
-
-if type gls &>/dev/null; then
-    :
-else
-    logUnavailable gls
-    # TODO: Implement 'ran' using 'ls' if 'gls' is unavailable
-fi
-
 Troubleshooting Bash:
   set -o verbose; set -o xtrace
   # Code to troubleshoot
