@@ -1,7 +1,12 @@
 #!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC2096
+# shellcheck disable=SC1090,SC2096
 # vim: set ft=bash:
 set -EeTuo pipefail
+
+>/dev/null umask -S u=rwx,g=,o=
+
+# shellcheck disable=SC2154
+touch "$(command dirname -- "${BASH_SOURCE[0]}")"/"${boPrefixRan}""$(command basename -- "${BASH_SOURCE[0]}")"
 
 # To safely test this script,
 # try: bash -c '. source_me.bash'
@@ -10,10 +15,40 @@ set -EeTuo pipefail
 boLogLevel=7
 declare -x boLogLevel
 
-# Recondition shell for the user
-set +o errexit
-set +o errtrace
-# TODO: verify reconditioning
+_Script=${HOME}/.config/XDG.env
+if [[ -r "${_Script}" ]]; then
+    echo "TRACE: Sourcing ${_Script}"
+    source "${_Script}"
+else
+    echo "WARN: Could not source script ${_Script}"
+fi
+
+# Since this is BriteOnyx's project repository, use it as the framework
+boFramework="$(command dirname -- "${BASH_SOURCE[0]}")"
+declare -rx boFramework
+
+# Install BriteOnyx framework, if necessary
+# REF: https://github.com/rdw20170120/BriteOnyx
+_Script=${boFramework}/installBriteOnyx.bash
+if [[ -r "${_Script}" ]]; then
+    echo "TRACE: Sourcing ${_Script}"
+    if [[ -v boFramework ]]; then
+        # Already have a framework, so don't specify a version tag
+        source "${_Script}"
+    else
+        # Include the desired version tag ("X.Y.Z") as an argument to the script
+        source "${_Script}" 0.2.0
+    fi
+    # NOTE: now we can start using BriteOnyx functionality
+    if [[ -v boFramework ]]; then
+        # Use BriteOnyx framework to finish Bash startup
+        source "$(require "${boFramework}"/bash/startup/from_profile.bash)"
+    fi
+else
+    echo "WARN: Could not source script ${_Script}"
+fi
+
+unset _Script
 
 ###############################################################################
 : <<'DisabledContent'

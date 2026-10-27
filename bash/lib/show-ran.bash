@@ -5,7 +5,7 @@ set -EeTuo pipefail
 
 remember "${BASH_SOURCE[0]}"
 
-declare -F showRan >/dev/null && return 0
+>/dev/null declare -F show-ran && return 0
 
 # shellcheck disable=SC2154
 source "${boDirLib}"/logging.bash
@@ -14,7 +14,7 @@ source "${boDirLib}"/requireCommand.bash
 source "${boDirLib}"/requireDirectoryIn.bash
 source "${boDirLib}"/requireValueIn.bash
 
-showRan() {
+show-ran() {
     # Show files tracking which scripts ran during BriteOnyx startup
     requireArguments $# 0
 
@@ -41,8 +41,8 @@ showRan() {
     requireDirectoryIn HOME
     requireDirectoryIn XDG_CONFIG_HOME
     requireDirectoryIn boFramework
-    requireDirectoryIn boHome
     requireValueIn boFormatDateGls
+    requireValueIn boHome
     requireValueIn boPrefixRan
 
     declare _CmdFd
@@ -94,7 +94,7 @@ showRan() {
         ${_Command2}
     } | awk '{print $6, $7}' | sort
 }
-declare -frx showRan
+declare -frx show-ran
 
 ###################################################################################################
 : <<'DisabledContent'

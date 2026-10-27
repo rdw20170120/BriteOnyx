@@ -12,9 +12,12 @@ remember "${BASH_SOURCE[0]}"
 boDirLib=${boFramework}/bash/lib
 declare -rx boDirLib
 
+# TODO: refactor
+declare -x boFormatDateGls="%Y%m%d_%H%M%S.%N"
+
 # shellcheck disable=SC2154
 source "$(require "${boDirLib}"/checkUsability.bash)"
-source "$(require "${boDirLib}"/showRan.bash)"
+source "$(require "${boDirLib}"/show-ran.bash)"
 
 # Reconfigure for usability
 set +o errexit
