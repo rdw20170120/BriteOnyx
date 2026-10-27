@@ -7,11 +7,6 @@ remember "${BASH_SOURCE[0]}"
 
 source "$(require "$(parentOf "${BASH_SOURCE[0]}")"/entry_point.bash)"
 
-# shellcheck disable=SC2154
-source "$(require "${boDirLib}"/changeDirectory.bash)"
-
-changeDirectory "${HOME}"
-
 ###################################################################################################
 : <<'DisabledContent'
 # Disable `errexit` in user's session

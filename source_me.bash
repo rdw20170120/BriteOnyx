@@ -25,27 +25,24 @@ fi
 
 # Since this is BriteOnyx's project repository, use it as the framework
 boFramework="$(command dirname -- "${BASH_SOURCE[0]}")"
-declare -rx boFramework
 
 # Install BriteOnyx framework, if necessary
 # REF: https://github.com/rdw20170120/BriteOnyx
 _Script=${boFramework}/installBriteOnyx.bash
 if [[ -r "${_Script}" ]]; then
     echo "TRACE: Sourcing ${_Script}"
-    if [[ -v boFramework ]]; then
-        # Already have a framework, so don't specify a version tag
-        source "${_Script}"
-    else
-        # Include the desired version tag ("X.Y.Z") as an argument to the script
-        source "${_Script}" 0.2.0
-    fi
-    # NOTE: now we can start using BriteOnyx functionality
-    if [[ -v boFramework ]]; then
-        # Use BriteOnyx framework to finish Bash startup
-        source "$(require "${boFramework}"/bash/startup/from_profile.bash)"
-    fi
+    source "${_Script}"
 else
     echo "WARN: Could not source script ${_Script}"
+fi
+
+if [[ -v boDirLib ]]; then
+    # BriteOnyx framework is initialized, so now we can use it
+    # shellcheck disable=SC2154
+    source "$(require "${boDirLib}"/changeDirectoryIn.bash)"
+
+    changeDirectoryIn boFramework
+    # TODO: changeDirectoryIn prjDirRoot
 fi
 
 unset _Script
@@ -104,7 +101,6 @@ requireDirectoryIn prjDirLib
 _Script=${prjDirLib}/project_override.bash
 require "${_Script}" && source "${_Script}"
 
-changeDirectoryIn prjDirRoot
 
 logDone "Project successfully activated in ${prjDirRoot}"
 
