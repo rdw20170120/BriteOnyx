@@ -29,7 +29,7 @@ declare -frx changeDirectoryIn
 
 # Dependencies:
 # shellcheck disable=SC2154
-source "${boDirLib}"/changeDirectoryIn.bash
+source "${boDirLib}"/changeDirectory.bash
 source "${boDirLib}"/requireArguments.bash
 source "${boDirLib}"/requireVariable.bash
 

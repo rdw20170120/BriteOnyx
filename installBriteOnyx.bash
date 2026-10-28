@@ -5,6 +5,9 @@ set -EeTuo pipefail
 
 >/dev/null umask -S u=rwx,g=,o=
 
+boPrefixRan=.ran_
+declare -rx boPrefixRan
+
 absolute() {
     # Return absolute pathname of file system entry $1
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")

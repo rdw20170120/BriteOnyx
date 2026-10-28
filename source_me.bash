@@ -5,15 +5,9 @@ set -EeTuo pipefail
 
 >/dev/null umask -S u=rwx,g=,o=
 
-# shellcheck disable=SC2154
+boPrefixRan=.ran_
+declare -rx boPrefixRan
 touch "$(command dirname -- "${BASH_SOURCE[0]}")"/"${boPrefixRan}""$(command basename -- "${BASH_SOURCE[0]}")"
-
-# To safely test this script,
-# try: bash -c '. source_me.bash'
-
-# Uncomment for debugging/development
-boLogLevel=7
-declare -x boLogLevel
 
 _Script=${HOME}/.config/XDG.env
 if [[ -r "${_Script}" ]]; then
@@ -23,6 +17,14 @@ else
     echo "WARN: Could not source script ${_Script}"
 fi
 
+# Uncomment for debugging/development
+boLogLevel=7
+declare -x boLogLevel
+
+# To safely test this script:
+# try:
+alias retest='bash -c ". source_me.bash"'
+
 # Since this is BriteOnyx's project repository, use it as the framework
 boFramework="$(command dirname -- "${BASH_SOURCE[0]}")"
 
@@ -31,6 +33,7 @@ boFramework="$(command dirname -- "${BASH_SOURCE[0]}")"
 _Script=${boFramework}/installBriteOnyx.bash
 if [[ -r "${_Script}" ]]; then
     echo "TRACE: Sourcing ${_Script}"
+    # Since this project repository is the framework, no need for the version tag
     source "${_Script}"
 else
     echo "WARN: Could not source script ${_Script}"
@@ -38,6 +41,8 @@ fi
 
 if [[ -v boDirLib ]]; then
     # BriteOnyx framework is initialized, so now we can use it
+
+    # Dependencies:
     # shellcheck disable=SC2154
     source "$(require "${boDirLib}"/changeDirectoryIn.bash)"
 
@@ -47,20 +52,11 @@ fi
 
 unset _Script
 
+# NOTE: MUST be the last executable line
+set +EeTu
+
 ###############################################################################
 : <<'DisabledContent'
-# NOTE: override BriteOnyx framework for local development
-# since this is the BriteOnyx project repository
-boFramework=$(parentOf "${BASH_SOURCE[0]}")
-declare -rx boFramework
-
-# This script uses the BriteOnyx framework
-# shellcheck disable=SC2154
-source "${boFramework}"/bash/startup/from_script.bash
-
-# Dependencies:
-# shellcheck disable=SC2154
-source "${boDirLib}"/changeDirectoryIn.bash
 source "${boDirLib}"/forbidVariable.bash
 source "${boDirLib}"/absolute.bash
 source "${boDirLib}"/logging.bash
@@ -101,10 +97,7 @@ requireDirectoryIn prjDirLib
 _Script=${prjDirLib}/project_override.bash
 require "${_Script}" && source "${_Script}"
 
-
 logDone "Project successfully activated in ${prjDirRoot}"
-
-unset _Script
 
 Troubleshooting Bash:
   set -o verbose; set -o xtrace
