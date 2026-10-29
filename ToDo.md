@@ -22,8 +22,10 @@ Use other characters for other meanings and purposes, but document them here fir
 
 Follow my Conventional Commits (TODO: document and reference)
 
-1. [ ] 1 feat(bash): implement flag to disable all color in output
-1. [ ] 1 feat(bash): implement flag to disable all timestamps in output
+1. [ ] 0 TYPE(SCOPE): DESCRIPTION
+1. [ ] 1 feat(bash): honor NO_COLOR as described at <https://no-color.org>
+1. [ ] 1 feat(bash): implement NO_TIME to disable nonessential timestamps in output
+1. [ ] 1 feat(bash): implement boNO to disable BriteOnyx
 1. [ ] ? chore(bash): for each variant of Bash syntax, chose a preference
 1. [ ] ? chore(bash): rename `prepareToSourceOptional`
 1. [ ] ? feat(bash): check for unwanted naming or syntax
@@ -48,4 +50,3 @@ Follow my Conventional Commits (TODO: document and reference)
 1. [ ] P chore(bash): ensure consistent use of `requireArguments`
 1. [ ] P chore(bash): ensure consistent use of `require` with `source`
 1. [ ] P chore(bash): prefer `declare` over `local` or `typeset`
-1. [ ] TYPE(SCOPE): DESCRIPTION
