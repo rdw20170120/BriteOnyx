@@ -33,7 +33,7 @@ and already serves as the foundation
 of all my user accounts
 and development efforts.
 
-To use BriteOnyx:
+To use BriteOnyx (for now):
 
 - clone the project repository: `git clone URL DIRECTORY`
 - open a Bash shell: `bash`
@@ -64,3 +64,18 @@ That should happen over the next few days.
 Since this is the project repository
 for BriteOnyx itself,
 it is a special case.
+
+I encountered some complications
+with shell inheritance
+and other nuances.
+I am doing a lot of research
+regarding the best way forward.
+
+For now,
+I am stripping down my dotfiles
+and BriteOnyx
+to a bare minimum.
+I am then building it back up
+with even-more-robust
+design choices
+and testing.
