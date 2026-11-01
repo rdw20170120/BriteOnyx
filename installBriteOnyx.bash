@@ -3,6 +3,11 @@
 # vim: set ft=bash:
 set -EeTuo pipefail
 
+if [[ -v boNO ]]; then
+    echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
+    return 0
+fi
+
 >/dev/null umask -S u=rwx,g=,o=
 
 boPrefixRan=.ran_

@@ -3,6 +3,11 @@
 # vim: set ft=bash:
 set -EeTuo pipefail
 
+if [[ -v boNO ]]; then
+    echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
+    return 0
+fi
+
 >/dev/null umask -S u=rwx,g=,o=
 
 boPrefixRan=.ran_
@@ -52,7 +57,7 @@ fi
 
 unset _Script
 
-# NOTE: MUST be the last executable line
+# NOTE: MUST be the last executable line, to make the resulting shell 'habitable'
 set +EeTu
 
 ###############################################################################
