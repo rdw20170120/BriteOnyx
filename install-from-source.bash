@@ -1,18 +1,22 @@
-#!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC1090,SC2096
+#!/usr/bin/env bash
 # vim: set ft=bash:
-set -EeTuo pipefail
+# NO: builtin set -ET
+builtin set -euo pipefail
 
-if [[ -v boNO ]]; then
-    echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
-    return 0
-fi
+# Install tagged source from a source-controlled project repository
+# by copying it into a local cache directory
+#
+# This script is part of the BriteOnyx framework,
+# but is designed for stand-alone use
+# including, particularly, to install
+# a copy of the BriteOnyx framework.
 
->/dev/null umask -S u=rwx,g=,o=
+[[ -v boHomeInstaller ]] ||
+    boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
+builtin declare -x boHomeInstaller
 
-boPrefixRan=.ran_
-declare -rx boPrefixRan
-
+###################################################################################################
+: <<'DisabledContent'
 absolute() {
     # Return absolute pathname of file system entry $1
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
@@ -217,11 +221,6 @@ _boInstall() {
     return 0
 }
 
-if [[ ! -v boHome ]]; then
-    boHome=${XDG_CACHE_HOME}/BriteOnyx
-    declare -rx boHome
-fi
-
 if [[ ! -v boUrl ]]; then
     boUrl=https://github.com/rdw20170120/BriteOnyx.git
     declare -rx boUrl
@@ -261,6 +260,4 @@ if [[ -v boFramework ]]; then
     source "$(require "${boFramework}"/bash/startup/from_profile.bash)"
 fi
 
-###################################################################################################
-: <<'DisabledContent'
 DisabledContent
