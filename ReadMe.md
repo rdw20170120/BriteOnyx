@@ -35,15 +35,19 @@ and development efforts.
 
 To use BriteOnyx (for now):
 
-- navigate your web browser to <https://github.com/rdw20170120/BriteOnyx>
-- download the `install-source.bash` script to some local `DIR`ectory
+- navigate your web browser to [the project home page](https://github.com/rdw20170120/BriteOnyx)
+- download the
+  [install-source.bash](https://github.com/rdw20170120/BriteOnyx/blob/main/install-source.bash)
+  script to some local `DIRECTORY`
 - read that script, understand it, OR do NOT ever trust it
-- pick a TAG from <https://github.com/rdw20170120/BriteOnyx/tags>
+- [pick a TAG](https://github.com/rdw20170120/BriteOnyx/tags)
 - IF you trust it, use the script to install the BriteOnyx framework:
 
 ```bash
 bash
-source DIR/install-source.bash BriteOnyx TAG https://github.com/rdw20170120/BriteOnyx.git
+source DIRECTORY/install-source.bash \
+    BriteOnyx TAG \
+    https://github.com/rdw20170120/BriteOnyx.git
 ```
 
 That will let you review the framework, somewhat, for now.
@@ -54,9 +58,14 @@ from within YOUR own project repository.
 I still have some work to do for that
 since I am redesigning the startup process.
 
-I have been using BriteOnyx
-from my Bash profile (`~/.bashrc`)
-but I still need to hook it
+I have been using BriteOnyx from
+[my Bash profile](https://codeberg.org/rdw6688/dotfile/src/branch/main/.bashrc),
+and I have begun to rehook the framework
+based on my redesign efforts.
+You can see this for yourself in
+[my dotfiles project](https://codeberg.org/rdw6688/dotfile).
+
+I still need to (re)hook the redesigned framework
 into my `source_me.bash` scripts
 across all my project repositories.
 That should happen over the next few weeks.
