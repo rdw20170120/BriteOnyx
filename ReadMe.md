@@ -35,32 +35,30 @@ and development efforts.
 
 To use BriteOnyx (for now):
 
-- clone the project repository: `git clone URL DIRECTORY`
-- open a Bash shell: `bash`
-- change to the project root directory: `cd DIRECTORY`
-- invoke BriteOnyx: `source source_me.bash`
+- navigate your web browser to <https://github.com/rdw20170120/BriteOnyx>
+- download the `install-source.bash` script to some local `DIR`ectory
+- read that script, understand it, OR do NOT ever trust it
+- IF you trust it, use the script to install the BriteOnyx framework:
 
-where:
+```bash
+bash
+source DIR/install-source.bash BriteOnyx TAG https://github.com/rdw20170120/BriteOnyx.git
+```
 
-- URL is available from the website hosting this project (GitHub, etc.)
-- local DIRECTORY is chosen by you
+That will let you review the framework, somewhat, for now.
+The next steps are to be able to experiment with the framework
+within its own project repository
+and eventually
+from within your OWN project repository.
+I still have some work to do for that
+since I am redesigning the startup process.
 
-Note though that REAL use of BriteOnyx
-is intended to be as support for
-your user account,
-your project repositories, etc.
-That means
-using BriteOnyx's install script
-from your Bash profile script
-and/or
-your project "activation" scripts similar to my `source_me.bash`.
-That is coming.
-I am already using BriteOnyx that way
+I have been using BriteOnyx
 from my Bash profile (`~/.bashrc`)
 but I still need to hook it
 into my `source_me.bash` scripts
 across all my project repositories.
-That should happen over the next few days.
+That should happen over the next few weeks.
 Since this is the project repository
 for BriteOnyx itself,
 it is a special case.
@@ -68,7 +66,7 @@ it is a special case.
 I encountered some complications
 with shell inheritance
 and other nuances.
-I am doing a lot of research
+I am doing a lot of research and redesign
 regarding the best way forward.
 
 For now,
