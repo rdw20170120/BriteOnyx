@@ -38,6 +38,7 @@ To use BriteOnyx (for now):
 - navigate your web browser to <https://github.com/rdw20170120/BriteOnyx>
 - download the `install-source.bash` script to some local `DIR`ectory
 - read that script, understand it, OR do NOT ever trust it
+- pick a TAG from <https://github.com/rdw20170120/BriteOnyx/tags>
 - IF you trust it, use the script to install the BriteOnyx framework:
 
 ```bash
