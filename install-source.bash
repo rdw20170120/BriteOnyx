@@ -15,6 +15,7 @@ builtin set -euo pipefail
 # of installing tagged source
 # from any Git repository.
 
+###################################################################################################
 if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
     >&2 builtin echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
     exit 1
