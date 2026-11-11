@@ -4,12 +4,16 @@
 builtin set -euo pipefail
 
 # Install tagged source from a source-controlled project repository
-# by copying it into a local cache directory
+# by copying it into a local cache directory.
 #
 # This script is part of the BriteOnyx framework,
 # but is designed for stand-alone use
 # including, particularly, to install
 # a copy of the BriteOnyx framework.
+#
+# However, it should be capable
+# of installing tagged source
+# from any Git repository.
 
 if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
     >&2 builtin echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
@@ -85,6 +89,11 @@ _install() {
 }
 
 _main() {
+    if [[ -v boNO ]]; then
+        >&2 builtin echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
+        return 0
+    fi
+
     if [[ $# -ne 3 ]]; then
         >&2 builtin echo 'ERROR: requires name, tag, and URL'
         return 1
@@ -107,9 +116,11 @@ _main() {
     return 0
 }
 
-_Home=$(_main "$@")
+# shellcheck disable=SC2034
+boInstalledInto=$(_main "$@")
 
 # Make this shell "habitable" again
+# TODO: save and restore shell options instead
 builtin set -o pipefail
 builtin set +o errexit
 builtin set +o nounset
