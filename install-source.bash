@@ -11,9 +11,108 @@ builtin set -euo pipefail
 # including, particularly, to install
 # a copy of the BriteOnyx framework.
 
+if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
+    >&2 builtin echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
+    exit 1
+fi
+
 [[ -v boHomeInstaller ]] ||
     boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
 builtin declare -x boHomeInstaller
+
+_install() {
+    # Install source
+    # with version tag $2
+    # from repository at URL $3
+    # into local directory $1
+    # $1=local installation directory
+    # $2=tag for desired version of source
+    # $3=project repository URL
+    builtin local -r _Dir=$1
+    builtin local -r _Tag=$2
+    builtin local -r _Url=$3
+
+    # require command git
+    # require command mkdir
+    # require command mktemp
+    # require command rm
+    # require command tar
+
+    # Create target directory
+    [[ -d "${_Dir}" ]] || command mkdir -p "${_Dir}"
+
+    # Create a temporary directory
+    # TODO: test this 'mktemp' call on various OSes
+    builtin local _DirTmp
+    _DirTmp=$(command mktemp -d "${boHomeInstaller}"/.XXXXXX)
+    builtin local -r _DirTmp
+    command mkdir -p "${_DirTmp}"
+
+    # Initialize empty working directory
+    command git \
+        init \
+        --quiet \
+        "${_DirTmp}"/repo
+
+    # Fetch remote repository into temporary directory
+    command git \
+        -C "${_DirTmp}"/repo \
+        fetch \
+        --depth 1 \
+        --quiet \
+        "${_Url}" \
+        refs/tags/"${_Tag}"
+
+    # Extract repository as a simple copy via 'tar'
+    command git \
+        -C "${_DirTmp}"/repo \
+        archive \
+        --format=tar \
+        FETCH_HEAD |
+        command tar \
+            -x \
+            --file - \
+            --directory "${_Dir}"
+
+    # Remove file write permissions, thereby making the copy readonly
+    # but leave the directories writable so that BriteOnyx can 'touch'
+    find "${_Dir}" -type f -exec chmod a-w {} \;
+
+    # Remove temporary directory
+    command rm -fr "${_DirTmp}"
+
+    return 0
+}
+
+_main() {
+    if [[ $# -ne 3 ]]; then
+        >&2 builtin echo 'ERROR: requires name, tag, and URL'
+        return 1
+    fi
+
+    builtin local -r _Name=$1
+    builtin local -r _Tag=$2
+    builtin local -r _Url=$3
+
+    builtin local -r _Home=${boHomeInstaller}/${_Name}/${_Tag}
+
+    if [[ -d ${_Home} ]]; then
+        >&2 builtin echo "INFO: ${_Name} ${_Tag} already installed in directory '${_Home}'"
+    else
+        >&2 builtin echo "INFO: Installing ${_Name} ${_Tag} into new directory '${_Home}'"
+        _install "${_Home}" "${_Tag}" "${_Url}"
+    fi
+
+    echo "${_Home}"
+    return 0
+}
+
+_Home=$(_main "$@")
+
+# Make this shell "habitable" again
+builtin set -o pipefail
+builtin set +o errexit
+builtin set +o nounset
 
 ###################################################################################################
 : <<'DisabledContent'
@@ -169,95 +268,5 @@ require() {
     echo "${_Result}"
 }
 declare -frx require
-
-remember "${BASH_SOURCE[0]}"
-
-# TODO: remove this function after use, so that it does not pollute the shell session?
-
-_boInstall() {
-    echo "INFO: Installing BriteOnyx framework to ${boFramework}"
-
-    # Create a temporary directory for our work
-    _DirTmp=$(mktemp -d "${boHome}"/.install-XXXXXX)
-    declare -r _DirTmp
-    mkdir -p "${_DirTmp}"
-
-    # Fetch repository into temporary directory
-    git \
-        init \
-        --quiet \
-        "${_DirTmp}"/repo
-    git \
-        -C "${_DirTmp}"/repo \
-        fetch \
-        --depth 1 \
-        --quiet \
-        "${boUrl}" \
-        refs/tags/"${boVersion}"
-
-    # Extract repository into a simple copy
-    mkdir "${_DirTmp}"/simple
-    git \
-        -C "${_DirTmp}"/repo \
-        archive \
-        --format=tar \
-        FETCH_HEAD |
-        tar \
-            -x \
-            --file - \
-            --directory "${_DirTmp}"/simple
-
-    # Move simple copy into its final place
-    mv "${_DirTmp}"/simple "${boFramework}"
-
-    # Remove write permissions, thereby making the copy readonly
-    # NOTE: but leave the directories writable so that BriteOnyx can "touch"
-    # NO: chmod -R a-w "${boFramework}"
-    # TODO: implement using "fd"
-
-    # Remove temporary directory
-    rm -fr "${_DirTmp}"
-
-    return 0
-}
-
-if [[ ! -v boUrl ]]; then
-    boUrl=https://github.com/rdw20170120/BriteOnyx.git
-    declare -rx boUrl
-fi
-
-if [[ -v boFramework ]]; then
-    # No positional arguments needed, so ignore them
-    echo "WARN: NOT installing, using overridden BriteOnyx framework at ${boFramework}"
-else
-    # Install BriteOnyx framework
-    # $1 = version tag of desired framework
-
-    # TODO: also check for too many arguments
-    if [[ $# -eq 0 ]]; then
-        echo "ERROR: Missing argument for version of BriteOnyx to install and reference"
-        return 1
-    fi
-
-    boVersion=$1
-    declare -rx boVersion
-
-    [[ -d "${boHome}" ]] || mkdir -p "${boHome}"
-
-    boFramework=${boHome}/${boVersion}
-
-    if [[ -d "${boFramework}" ]]; then
-        echo "INFO: BriteOnyx framework is already installed in ${boFramework}"
-    else
-        _boInstall
-    fi
-fi
-
-if [[ -v boFramework ]]; then
-    boFramework=$(absolute "${boFramework}")
-    declare -rx boFramework
-    # Use BriteOnyx framework to finish Bash startup
-    source "$(require "${boFramework}"/bash/startup/from_profile.bash)"
-fi
 
 DisabledContent
