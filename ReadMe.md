@@ -50,7 +50,7 @@ That will let you review the framework, somewhat, for now.
 The next steps are to be able to experiment with the framework
 within its own project repository
 and eventually
-from within your OWN project repository.
+from within YOUR own project repository.
 I still have some work to do for that
 since I am redesigning the startup process.
 
