@@ -1,74 +1,41 @@
-#!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC1090,SC1091,SC2096
+#!/usr/bin/env bash
+# shellcheck disable=SC1090
 # vim: set ft=bash:
-set -EeTuo pipefail
+# NO: set -EeTu
+set -o pipefail
 
+###################################################################################################
+if [[ -v boNO ]]; then
+    log "WARN: Found 'boNO' defined, disabling BriteOnyx"
+    return 0
+fi
+
+###################################################################################################
 # Uncomment for debugging/development
 boLogLevel=7
-export boLogLevel
+declare -x boLogLevel
 
-###############################################################################
+###################################################################################################
+# Use account-level XDG configuration, if available
+_Script=${HOME}/.config/XDG.env
+if [[ -r "${_Script}" ]]; then
+    log "TRACE: Sourcing ${_Script}"
+    source "${_Script}"
+else
+    log "WARN: Could not source script ${_Script}"
+fi
+
+###################################################################################################
+# Since this is BriteOnyx's project repository, use it as the framework
+# shellcheck disable=SC2034
+boFramework="$(dirname -- "${BASH_SOURCE[0]}")"/framework
+log "boFramework=${boFramework}"
+
+###################################################################################################
+# Freeze reference to BriteOnyx framework
+declare -r boFramework
+
+###################################################################################################
 : <<'DisabledContent'
-# NOTE: override BriteOnyx framework for local development
-# since this is the BriteOnyx project repository
-boFramework=$(parentOf "${BASH_SOURCE[0]}")
-declare -rx boFramework
-
-# This script uses the BriteOnyx framework
-# shellcheck disable=SC2154
-source "${boFramework}"/bash/startup/from_script.bash
-
-# Dependencies:
-# shellcheck disable=SC2154
-source "${boDirLib}"/changeDirectoryIn.bash
-source "${boDirLib}"/forbidVariable.bash
-source "${boDirLib}"/absolute.bash
-source "${boDirLib}"/logging.bash
-source "${boDirLib}"/maybeCreateDirectoryTree.bash
-source "${boDirLib}"/requireDirectory.bash
-source "${boDirLib}"/requireDirectoryIn.bash
-
-logExecuting "${BASH_SOURCE[0]}"
-
-logActivity 'Activating this project for this Bash session'
-
-forbidVariable prjDirRoot
-prjDirRoot=$(parentOf "${BASH_SOURCE[0]}")
-declare -rx prjDirRoot
-logVariable prjDirRoot
-requireDirectoryIn prjDirRoot
-
-forbidVariable prjDirTmp
-prjDirTmp="${prjDirRoot}"/.tmp
-declare -rx prjDirTmp
-logVariable prjDirTmp
-maybeCreateDirectoryTree "${prjDirTmp}"
-
-# Use relative path for project scripts
-# so it works in project directory
-# and all subdirectories (subprojects)
-forbidVariable prjPathExe
-prjPathExe=./bin
-declare -x prjPathExe
-logVariable prjPathExe
-
-forbidVariable prjDirLib
-prjDirLib=${prjDirRoot}/lib
-declare -rx prjDirLib
-logVariable prjDirLib
-requireDirectoryIn prjDirLib
-
-_Script=${prjDirLib}/project_override.bash
-require "${_Script}" && source "${_Script}"
-
-changeDirectoryIn prjDirRoot
-
-logDone "Project successfully activated in ${prjDirRoot}"
-
-unset _Script
-
 Troubleshooting Bash:
-  set -o verbose; set -o xtrace
-  # Code to troubleshoot
-  set +o verbose; set +o xtrace
 DisabledContent

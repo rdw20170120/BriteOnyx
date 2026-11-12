@@ -25,17 +25,12 @@ Follow my Conventional Commits (TODO: document and reference)
 1. [ ] 0 TYPE(SCOPE): DESCRIPTION
 1. [ ] 1 feat(bash): honor `NO_COLOR` as described at <https://no-color.org>
 1. [ ] 1 feat(bash): implement `NO_TIME` to disable nonessential timestamps in output
-1. [ ] 1 feat(bash): implement `boNO` to disable BriteOnyx
 1. [ ] ? chore(bash): for each variant of Bash syntax, chose a preference
 1. [ ] ? chore(bash): rename `prepareToSourceOptional`
 1. [ ] ? feat(bash): check for unwanted naming or syntax
 1. [ ] ? feat(bash): check for unwanted special comment keywords
 1. [ ] ? feat(bash): create `alias`es for special comments
-1. [ ] ? feat(bash): customize command-line editing
-1. [ ] ? feat(bash): customize command-line searching
 1. [ ] ? feat(bash): implement support for scripts to properly use `trap` to cleanup
-1. [ ] ? feat(bash): manage invocation of `builtin`s
-1. [ ] ? feat(bash): manage invocation of `command`s
 1. [ ] ? feat(bash): show invocables (alias, builtin, command, function, script)
 1. [ ] A feat(bash): extract BriteOnyx from other project repositories
 1. [ ] A feat(bash): implement strategy for customization/extension scripts
@@ -49,4 +44,9 @@ Follow my Conventional Commits (TODO: document and reference)
 1. [ ] P chore(bash): ensure consistent use of `remember`
 1. [ ] P chore(bash): ensure consistent use of `requireArguments`
 1. [ ] P chore(bash): ensure consistent use of `require` with `source`
-1. [ ] P chore(bash): prefer `declare` over `local` or `typeset`
+1. [ ] P chore(bash): prefer `declare` over `typeset`, outside of functions
+1. [ ] P chore(bash): prefer `local` inside functions
+1. [ ] P chore(bash): prefer `printf` over `echo`
+1. [x] chore(bash): remove extraneous use of `builtin`
+1. [x] chore(bash): remove extraneous use of `command`
+1. [x] feat(bash): implement `boNO` to disable BriteOnyx

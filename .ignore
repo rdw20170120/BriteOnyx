@@ -2,6 +2,7 @@
 # `fd` and `rg` respect `.ignore` files like this one
 # but `git` does not...as desired
 
+/.git/
 /.tmp/
 /.waiting/
 /tags
