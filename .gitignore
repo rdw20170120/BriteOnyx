@@ -15,5 +15,5 @@
 # Yet still ignore these:
 *-raw.out
 *.bak
-.ran_*
+.ran=*
 /.tmp

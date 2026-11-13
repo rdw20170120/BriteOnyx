@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
-# NO: set -ET
-set -euo pipefail
+# NO: set -EeTu
+set -o pipefail
+# TODO: remove after development/testing
+set -eu
+
+# TODO: refactor these into their own declaration scripts
 
 ###################################################################################################
 if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
     log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
-    exit 1
+    return 1
 fi
 
 absolute() {

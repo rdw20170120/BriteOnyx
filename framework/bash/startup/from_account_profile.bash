@@ -2,11 +2,18 @@
 # vim: set ft=bash:
 # NO: set -EeTu
 set -o pipefail
+# TODO: remove after development/testing
+set -eu
 
 ###################################################################################################
-if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
-    log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
-    exit 1
+# MUST be properly 'source'd, NOT executed
+if [[ -z "${BASH_SOURCE[0]}" ]]; then
+    log "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    return 1
+fi
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    log "ERROR: Aborting, cannot execute, MUST source script '$0'"
+    return 1
 fi
 
 ###################################################################################################
@@ -18,4 +25,19 @@ fi
 ###################################################################################################
 # Remember that we ran this script
 # shellcheck disable=SC2154
-touch "${boFramework}"/bash/startup/.ran_from_account_profile.bash
+touch "${boFramework}"/bash/startup/${boRan}from_account_profile.bash
+
+# TODO: implement
+
+###################################################################################################
+# Freeze reference to BriteOnyx framework
+declare -r boFramework
+
+###################################################################################################
+: <<'DisabledContent'
+Troubleshooting Bash:
+    set -o verbose
+    set -o errtrace; set -o functrace ; set -o xtrace
+    # Code to troubleshoot
+    set +o errtrace; set +o functrace ; set +o xtrace ; set +o verbose
+DisabledContent

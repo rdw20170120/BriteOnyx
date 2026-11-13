@@ -18,7 +18,7 @@ set -euo pipefail
 ###################################################################################################
 if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
     log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
-    exit 1
+    return 1
 fi
 
 [[ -v boHomeInstaller ]] ||
