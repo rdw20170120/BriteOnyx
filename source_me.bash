@@ -4,8 +4,6 @@
 set -o pipefail
 # TODO: remove after development/testing
 set -eu
-# NO: set -EeTu
-set -o pipefail
 
 ###################################################################################################
 # Trivial logging, for now

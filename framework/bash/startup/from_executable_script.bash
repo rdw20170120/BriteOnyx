@@ -6,13 +6,13 @@ set -o pipefail
 set -eu
 
 ###################################################################################################
-# MUST be executed, NOT 'source'd
+# MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
     log "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
     return 1
 fi
-if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
-    log "ERROR: Aborting, cannot source, MUST execute script '$0'"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
     return 1
 fi
 

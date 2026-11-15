@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
-# NO: set -ET
-set -euo pipefail
+# NO: set -EeTu
+set -o pipefail
+# TODO: remove after development/testing
+set -eu
 
 # Install tagged source from a source-controlled project repository
 # by copying it into a local cache directory.
@@ -16,11 +18,17 @@ set -euo pipefail
 # from any Git repository.
 
 ###################################################################################################
-if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
+# MUST be properly 'source'd, NOT executed
+if [[ -z "${BASH_SOURCE[0]}" ]]; then
+    log "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    return 1
+fi
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
     return 1
 fi
 
+###################################################################################################
 [[ -v boHomeInstaller ]] ||
     boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
 declare -x boHomeInstaller
