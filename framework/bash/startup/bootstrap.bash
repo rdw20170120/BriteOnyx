@@ -2,7 +2,7 @@
 # vim: set ft=bash:
 # NO: set -EeTu
 set -o pipefail
-# TODO: remove after development/testing
+# FIX: remove after development/testing
 set -eu
 
 # TODO: refactor these into their own declaration scripts
@@ -10,11 +10,11 @@ set -eu
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    log "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
     return 1
 fi
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
+    >&2 echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
     return 1
 fi
 
@@ -23,7 +23,7 @@ absolute() {
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
 
     if [[ $# -ne 1 ]]; then
-        log "FATAL: Function 'absolute' requires 1 argument instead of $#"
+    >&2 echo "FATAL: Function 'absolute' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -47,7 +47,7 @@ baseOf() {
     # $1 = pathname of a file system entry
 
     if [[ $# -ne 1 ]]; then
-        log "FATAL: Function 'baseOf' requires 1 argument instead of $#"
+    >&2 echo "FATAL: Function 'baseOf' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -64,7 +64,7 @@ dirOf() {
     # $1 = pathname of a file system entry
 
     if [[ $# -ne 1 ]]; then
-        log "FATAL: Function 'dirOf' requires 1 argument instead of $#"
+    >&2 echo "FATAL: Function 'dirOf' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -88,7 +88,7 @@ executing() {
     # $2 = name of executing function (e.g., from "${FUNCNAME[0]}")
 
     if [[ $# -ne 2 ]]; then
-        log "FATAL: Function 'executing' requires 2 arguments instead of $#"
+    >&2 echo "FATAL: Function 'executing' requires 2 arguments instead of $#"
         exit 1
     fi
 
@@ -113,7 +113,7 @@ parentOf() {
     # $1 = pathname of a file system entry
 
     if [[ $# -ne 1 ]]; then
-        log "FATAL: Function 'parentOf' requires 1 argument instead of $#"
+    >&2 echo "FATAL: Function 'parentOf' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -131,7 +131,7 @@ remember() {
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
 
     if [[ $# -ne 1 ]]; then
-        log "FATAL: Function 'remember' requires 1 argument instead of $#"
+    >&2 echo "FATAL: Function 'remember' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -154,7 +154,7 @@ require() {
     # $1 = pathname of script about to be invoked via "source"
 
     if [[ $# -ne 1 ]]; then
-        log "FATAL: Function 'require' requires 1 argument instead of $#"
+    >&2 echo "FATAL: Function 'require' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -163,7 +163,7 @@ require() {
     _Result=$(absolute "${_Result}")
 
     if [[ ! -r "$1" ]]; then
-        log "ERROR: Could not find readable script $1"
+    >&2 echo "ERROR: Could not find readable script $1"
         exit 1
     fi
 

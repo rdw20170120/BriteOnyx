@@ -2,7 +2,7 @@
 # vim: set ft=bash:
 # NO: set -EeTu
 set -o pipefail
-# TODO: remove after development/testing
+# FIX: remove after development/testing
 set -eu
 
 # Install tagged source from a source-controlled project repository
@@ -20,17 +20,22 @@ set -eu
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    log "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
     return 1
 fi
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    log "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
+    >&2 echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
     return 1
 fi
 
 ###################################################################################################
-[[ -v boHomeInstaller ]] ||
-    boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
+if [[ -v boNO ]]; then
+    >&2 echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
+    return 0
+fi
+
+###################################################################################################
+[[ -v boHomeInstaller ]] || boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
 declare -x boHomeInstaller
 
 _install() {
@@ -98,16 +103,10 @@ _install() {
 }
 
 _main() {
-    if [[ -v boNO ]]; then
-        log "WARN: Found 'boNO' defined, disabling BriteOnyx"
-        return 0
-    fi
-
     if [[ $# -ne 3 ]]; then
-        log 'ERROR: requires name, tag, and URL'
+        >&2 echo 'ERROR: requires name, tag, and URL arguments'
         return 1
     fi
-
     local -r _Name=$1
     local -r _Tag=$2
     local -r _Url=$3
@@ -115,9 +114,9 @@ _main() {
     local -r _Home=${boHomeInstaller}/${_Name}/${_Tag}
 
     if [[ -d ${_Home} ]]; then
-        log "INFO: ${_Name} ${_Tag} already installed in directory '${_Home}'"
+        >&2 echo "INFO: ${_Name} ${_Tag} already installed in directory '${_Home}'"
     else
-        log "INFO: Installing ${_Name} ${_Tag} into new directory '${_Home}'"
+        >&2 echo "INFO: Installing ${_Name} ${_Tag} into new directory '${_Home}'"
         _install "${_Home}" "${_Tag}" "${_Url}"
     fi
 
@@ -128,6 +127,7 @@ _main() {
 # shellcheck disable=SC2034
 boInstalledInto=$(_main "$@")
 
+###################################################################################################
 # Make this shell "habitable" again
 # TODO: save and restore shell options instead
 set -o pipefail
