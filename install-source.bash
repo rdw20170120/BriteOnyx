@@ -5,6 +5,8 @@ set -o pipefail
 # FIX: remove after development/testing
 set -eu
 
+requireToBeSourced "$0" "${BASH_SOURCE[0]}"
+
 # Install tagged source from a source-controlled project repository
 # by copying it into a local cache directory.
 #
@@ -16,27 +18,6 @@ set -eu
 # However, it should be capable
 # of installing tagged source
 # from any Git repository.
-
-###################################################################################################
-# MUST be properly 'source'd, NOT executed
-if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
-    return 1
-fi
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    >&2 echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
-    return 1
-fi
-
-###################################################################################################
-if [[ -v boNO ]]; then
-    >&2 echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
-    return 0
-fi
-
-###################################################################################################
-[[ -v boHomeInstaller ]] || boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
-declare -x boHomeInstaller
 
 _install() {
     # Install source
@@ -92,9 +73,8 @@ _install() {
             --file - \
             --directory "${_Dir}"
 
-    # Remove file write permissions, thereby making the copy readonly
-    # but leave the directories writable so that BriteOnyx can 'touch'
-    find "${_Dir}" -type f -exec chmod a-w {} \;
+    # Remove write permissions, thereby making the copy readonly
+    find "${_Dir}" -exec chmod a-w {} \;
 
     # Remove temporary directory
     rm -fr "${_DirTmp}"

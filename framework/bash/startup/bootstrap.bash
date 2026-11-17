@@ -5,30 +5,31 @@ set -o pipefail
 # FIX: remove after development/testing
 set -eu
 
-# TODO: refactor these into their own declaration scripts
+# BASH_SOURCE[0]=environment appears to indicate that a script was executed at the CLI prompt
+# TODO: What does BASH_LINENO[0]=0 mean?
 
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    >&2 echo "FATAL: Aborting, 'BASH_SOURCE' is empty in script '$0'"
     return 1
 fi
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    >&2 echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
+    >&2 echo "FATAL: Aborting, script '$0' MUST be sourced instead of executed"
     return 1
 fi
+
+###################################################################################################
 
 absolute() {
     # Return absolute pathname of file system entry $1
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
-
     if [[ $# -ne 1 ]]; then
-    >&2 echo "FATAL: Function 'absolute' requires 1 argument instead of $#"
+        >&2 echo "FATAL: Function 'absolute' requires 1 argument instead of $#"
         exit 1
     fi
 
-    declare _Pathname
-    _Pathname=$1
+    local _Pathname=$1
 
     if [[ -d "${_Pathname}" ]]; then
         cd -- "${_Pathname}"
@@ -40,36 +41,32 @@ absolute() {
 
     echo "${_Result}"
 }
-# declare -frx absolute
+declare -frx absolute
 
 baseOf() {
     # Return base of pathname $1
     # $1 = pathname of a file system entry
-
     if [[ $# -ne 1 ]]; then
-    >&2 echo "FATAL: Function 'baseOf' requires 1 argument instead of $#"
+        >&2 echo "FATAL: Function 'baseOf' requires 1 argument instead of $#"
         exit 1
     fi
 
-    declare _Result
-    _Result=$1
+    local _Result=$1
     _Result=$(basename -- "${_Result}")
 
     echo "${_Result}"
 }
-# declare -frx baseOf
+declare -frx baseOf
 
 dirOf() {
     # Return directory of pathname $1, self if it is a directory
     # $1 = pathname of a file system entry
-
     if [[ $# -ne 1 ]]; then
-    >&2 echo "FATAL: Function 'dirOf' requires 1 argument instead of $#"
+        >&2 echo "FATAL: Function 'dirOf' requires 1 argument instead of $#"
         exit 1
     fi
 
-    declare _Result
-    _Result=$1
+    local _Result=$1
 
     if [[ ! -d "${_Result}" ]]; then
         _Result=$(dirname -- "${_Result}")
@@ -78,7 +75,7 @@ dirOf() {
     _Result=$(absolute "${_Result}")
     echo "${_Result}"
 }
-# declare -frx dirOf
+declare -frx dirOf
 
 executing() {
     # Acknowledge that function $2 defined in script $1 is executing now
@@ -86,18 +83,16 @@ executing() {
     # in every significant function--with few low-level exceptions.
     # $1 = pathname of defining script (e.g., from "${BASH_SOURCE[0]}")
     # $2 = name of executing function (e.g., from "${FUNCNAME[0]}")
-
     if [[ $# -ne 2 ]]; then
-    >&2 echo "FATAL: Function 'executing' requires 2 arguments instead of $#"
+        >&2 echo "FATAL: Function 'executing' requires 2 arguments instead of $#"
         exit 1
     fi
 
-    declare _Function
-    _Function=$2
-    declare _Pathname
-    _Pathname=$1
+    local _Function=$2
+    local _Pathname=$1
     _Pathname=$(absolute "${_Pathname}")
 
+    # shellcheck disable=SC2034
     if >/dev/null declare -F logCall; then
         logCall "${_Function}"
     fi
@@ -106,67 +101,121 @@ executing() {
 
     return 0
 }
-# declare -frx executing
+declare -frx executing
 
 parentOf() {
     # Return parent directory of pathname $1
     # $1 = pathname of a file system entry
-
     if [[ $# -ne 1 ]]; then
-    >&2 echo "FATAL: Function 'parentOf' requires 1 argument instead of $#"
+        >&2 echo "FATAL: Function 'parentOf' requires 1 argument instead of $#"
         exit 1
     fi
 
-    declare _Result
-    _Result=$1
+    local _Result=$1
     _Result=$(dirname -- "${_Result}")
     _Result=$(absolute "${_Result}")
 
     echo "${_Result}"
 }
-# declare -frx dirOf
-
-remember() {
-    # Remember that we ran script $1
-    # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
-
-    if [[ $# -ne 1 ]]; then
-    >&2 echo "FATAL: Function 'remember' requires 1 argument instead of $#"
-        exit 1
-    fi
-
-    declare _Pathname
-    _Pathname=$1
-    _Pathname=$(absolute "${_Pathname}")
-
-    # Remember that we executed the script,
-    # but not by (problematic) logging during shell startup
-    # shellcheck disable=SC2154
-    touch "$(dirname -- "${_Pathname}")"/"${boPrefixRan}""$(basename -- "${_Pathname}")"
-
-    return 0
-}
-# declare -frx remember
+declare -frx parentOf
 
 require() {
     # Require script $1, expecting it to be invoked via Bash 'source' command
     # Return absolute pathname of script
     # $1 = pathname of script about to be invoked via "source"
-
     if [[ $# -ne 1 ]]; then
-    >&2 echo "FATAL: Function 'require' requires 1 argument instead of $#"
+        >&2 echo "FATAL: Function 'require' requires 1 argument instead of $#"
         exit 1
     fi
 
-    declare _Result
-    _Result=$1
+    local _Result=$1
     _Result=$(absolute "${_Result}")
 
-    if [[ ! -r "$1" ]]; then
-    >&2 echo "ERROR: Could not find readable script $1"
+    if [[ ! -r "${_Result}" ]]; then
+        >&2 echo "ERROR: Could not find readable script ${_Result}"
         exit 1
     fi
 
     echo "${_Result}"
 }
-# declare -frx require
+declare -frx require
+
+requireBriteOnyx() {
+    # Require BriteOnyx framework
+    # No arguments
+
+    if [[ -v boNO ]]; then
+        >&2 echo "ERROR: Found 'boNO' defined, BriteOnyx is explicitly disabled"
+        return 1
+    fi
+    if [[ -v boFramework ]]; then
+        if [[ ! -d "${boFramework}" ]]; then
+            >&2 echo "ERROR: 'boFramework' does not reference a directory, need BriteOnyx"
+            return 1
+        fi
+    else
+        >&2 echo "ERROR: Missing 'boFramework', need BriteOnyx"
+        return 1
+    fi
+
+    return 0
+}
+declare -frx requireBriteOnyx
+
+requireToBeExecuted() {
+    # Require the calling script to be executed, NOT 'source'd
+    # $1 = name of executable (e.g., from "$0")
+    # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
+    if [[ $# -ne 2 ]]; then
+        >&2 echo "FATAL: Function 'requireToBeExecuted' requires 2 arguments instead of $#"
+        exit 1
+    fi
+
+    local _Executable=$1
+    local _Script=$2
+
+    if [[ -z "${_Script}" ]]; then
+        >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
+        return 1
+    fi
+    if [[ "${_Script}" != "${_Executable}" ]]; then
+        >&2 echo "ERROR: Aborting, cannot source, MUST execute script '${_Executable}'"
+        exit 1
+    fi
+
+    return 0
+}
+declare -frx requireToBeExecuted
+
+requireToBeSourced() {
+    # Require the calling script to be 'source'd, NOT executed
+    # $1 = name of executable (e.g., from "$0")
+    # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
+    if [[ $# -ne 2 ]]; then
+        >&2 echo "FATAL: Function 'requireToBeSourced' requires 2 arguments instead of $#"
+        exit 1
+    fi
+
+    local _Executable=$1
+    local _Script=$2
+
+    if [[ -z "${_Script}" ]]; then
+        >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
+        return 1
+    fi
+    if [[ "${_Script}" == "${_Executable}" ]]; then
+        >&2 echo "ERROR: Aborting, cannot execute, MUST source script '${_Executable}'"
+        return 1
+    fi
+
+    return 0
+}
+declare -frx requireToBeSourced
+
+###################################################################################################
+: <<'DisabledContent'
+Troubleshooting Bash:
+    set -o verbose; set -o errtrace; set -o functrace ; set -o xtrace
+    # Code to troubleshoot
+    set +o errtrace; set +o functrace ; set +o xtrace ; set +o verbose
+DisabledContent

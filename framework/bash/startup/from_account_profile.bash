@@ -5,28 +5,20 @@ set -o pipefail
 # FIX: remove after development/testing
 set -eu
 
-###################################################################################################
-# MUST be properly 'source'd, NOT executed
-if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
-    return 1
-fi
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    >&2 echo "ERROR: Aborting, cannot execute, MUST source script '$0'"
-    return 1
-fi
-
-###################################################################################################
-if [[ -v boNO ]]; then
-    >&2 echo "WARN: Found 'boNO' defined, disabling BriteOnyx"
-    return 1
-fi
+requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 # TODO: implement
 
 ###################################################################################################
-# Freeze reference to BriteOnyx framework
-declare -r boFramework
+# Export and freeze reference to BriteOnyx framework
+declare -rx boFramework
+requireBriteOnyx
+
+###################################################################################################
+# MUST be the last executable lines, to make the resulting shell 'habitable'
+set -o pipefail
+set +o errexit
+set +o nounset
 
 ###################################################################################################
 : <<'DisabledContent'

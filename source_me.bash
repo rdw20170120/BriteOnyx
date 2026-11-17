@@ -5,6 +5,7 @@ set -o pipefail
 # FIX: remove after development/testing
 set -eu
 
+# FIX: requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
