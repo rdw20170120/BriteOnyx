@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
-# NO: set -EeTu
-set -o pipefail
-# FIX: remove after development/testing
-set -eu
+# NO: set -ET
+set -euo pipefail
 
 # BASH_SOURCE[0]=environment appears to indicate that a script was executed at the CLI prompt
 # TODO: What does BASH_LINENO[0]=0 mean?
@@ -131,8 +129,10 @@ require() {
     local _Result=$1
     _Result=$(absolute "${_Result}")
 
-    if [[ ! -r "${_Result}" ]]; then
-        >&2 echo "ERROR: Could not find readable script ${_Result}"
+    if [[ -r "${_Result}" ]]; then
+        >&2 echo "TRACE: Required script '${_Result}'"
+    else
+        >&2 echo "ERROR: Could not find readable script '${_Result}'"
         exit 1
     fi
 
@@ -145,16 +145,16 @@ requireBriteOnyx() {
     # No arguments
 
     if [[ -v boNO ]]; then
-        >&2 echo "ERROR: Found 'boNO' defined, BriteOnyx is explicitly disabled"
+        >&2 echo "FATAL: Found 'boNO' defined, BriteOnyx is explicitly disabled"
         return 1
     fi
     if [[ -v boFramework ]]; then
         if [[ ! -d "${boFramework}" ]]; then
-            >&2 echo "ERROR: 'boFramework' does not reference a directory, need BriteOnyx"
+            >&2 echo "FATAL: 'boFramework' does not reference a directory, need BriteOnyx"
             return 1
         fi
     else
-        >&2 echo "ERROR: Missing 'boFramework', need BriteOnyx"
+        >&2 echo "FATAL: Missing 'boFramework', need BriteOnyx"
         return 1
     fi
 

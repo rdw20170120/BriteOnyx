@@ -1,11 +1,5 @@
-#!/usr/bin/env bash -c 'MUST be invoked via source'
-# shellcheck disable=SC1090,SC1091,SC2096
+#!/usr/bin/env bash
 # vim: set ft=bash:
-set -EeTuo pipefail
-
-# Uncomment for debugging/development
-boLogLevel=7
-export boLogLevel
 
 ###############################################################################
 : <<'DisabledContent'
@@ -66,9 +60,4 @@ changeDirectoryIn prjDirRoot
 logDone "Project successfully activated in ${prjDirRoot}"
 
 unset _Script
-
-Troubleshooting Bash:
-  set -o verbose; set -o xtrace
-  # Code to troubleshoot
-  set +o verbose; set +o xtrace
 DisabledContent

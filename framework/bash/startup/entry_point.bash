@@ -1,40 +1,32 @@
 #!/usr/bin/env bash -c 'MUST be invoked via source'
 # shellcheck disable=SC1090,SC2096
 # vim: set ft=bash:
-set -EeTuo pipefail
+# NO: set -ET
+set -euo pipefail
 
+requireBriteOnyx
+
+###################################################################################################
+# Crucial to set 'umask' early, before modifying the filesystem
 >/dev/null umask -S u=rwx,g=,o=
-
-remember "${BASH_SOURCE[0]}"
 
 # Establish reference to library of Bash functions
 # shellcheck disable=SC2154
 boDirLib=${boFramework}/bash/lib
 declare -rx boDirLib
 
-# TODO: refactor
-declare -x boFormatDateGls="%Y%m%d_%H%M%S.%N"
+###################################################################################################
+# Export and freeze reference to BriteOnyx framework
+declare -rx boFramework
 
-# shellcheck disable=SC2154
-source "$(require "${boDirLib}"/checkUsability.bash)"
-source "$(require "${boDirLib}"/show-ran.bash)"
-
-# Reconfigure for usability
-set +o errexit
-set +o errtrace
-set +o functrace
-set +o hashall
-set +o interactive-comments
-# TODO: refactor to my customizations
-set +o emacs
-set -o vi
-checkUsability
-
-# shellcheck disable=SC2154
-logDone "BriteOnyx framework successfully activated in ${boFramework}"
+###################################################################################################
+# logDone "BriteOnyx framework successfully activated in ${boFramework}"
 
 ###################################################################################################
 : <<'DisabledContent'
+# TODO: refactor
+declare -x boFormatDateGls="%Y%m%d_%H%M%S.%N"
+
 
 # User portion of PATH
 # shellcheck disable=SC2154
@@ -68,9 +60,4 @@ source "$(require "${boFramework}"/bash/startup/l/all.bash)"
 # source $(parentOf ${BASH_SOURCE})/onError.bash
 # trap 'onError "LINENO" "BASH_LINENO" "${BASH_COMMAND}" "${?}"' ERR
 # trap 'echo "Hello there, I caught exit $? from $(caller), ${FUNC_NAME}, ${LINENO}, ${BASH_LINENO}"' EXIT
-
-Troubleshooting Bash:
-  set -o verbose; set -o xtrace
-  # Code to troubleshoot
-  set +o verbose; set +o xtrace
 DisabledContent

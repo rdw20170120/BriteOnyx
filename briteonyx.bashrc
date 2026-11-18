@@ -1,33 +1,40 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090
 # vim: set ft=bash:
-# NO: set -EeTu
-set -o pipefail
-# FIX: remove after development/testing
-set -eu
-
-###################################################################################################
-# Crucial to set 'umask' early, before modifying the filesystem
->/dev/null umask -S u=rwx,g=,o=
-
-###################################################################################################
-requireToBeSourced "$0" "${BASH_SOURCE[0]}"
-
-###################################################################################################
-# Uncomment for debugging/development
-# boLogLevel=7
-# declare -x boLogLevel
+# NO: set -ET
+set -euo pipefail
 
 ###################################################################################################
 # Since this is BriteOnyx's project repository, use it as the framework
 # shellcheck disable=SC2034
-boFramework="$(dirname "${BASH_SOURCE[0]}")"/framework
+boFramework=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/framework
 >&2 echo "boFramework=${boFramework}"
 
-# FIX: for development/testing
-exit 0
+###################################################################################################
+_Script="${boFramework}"/bash/startup/bootstrap.bash
+if [[ -r ${_Script} ]]; then
+    >&2 echo "TRACE: Sourcing script '${_Script}'"
+    source "${_Script}"
+else
+    >&2 echo "FATAL: Missing script '${_Script}'"
+    return 1
+fi
+
+###################################################################################################
+source "$(require "${boFramework}"/bash/startup/from_project_profile.bash)"
+
+###################################################################################################
+# Finish project-specific configuration
+# TODO: implement, as needed
+
+###################################################################################################
+# MUST be the last executable lines, to make the resulting shell 'habitable'
+set -o pipefail
+set +o errexit
+set +o nounset
+set +o emacs
+set -o vi
 
 ###################################################################################################
 : <<'DisabledContent'
-Troubleshooting Bash:
 DisabledContent

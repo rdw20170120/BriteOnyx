@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
-# NO: set -EeTu
-set -o pipefail
-# FIX: remove after development/testing
-set -eu
+# NO: set -ET
+set -euo pipefail
 
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
