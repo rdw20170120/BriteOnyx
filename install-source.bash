@@ -3,7 +3,7 @@
 # NO: set -ET
 set -euo pipefail
 
-requireToBeSourced "$0" "${BASH_SOURCE[0]}"
+# TODO: consider whether this script could be executed instead
 
 # Install tagged source from a source-controlled project repository
 # by copying it into a local cache directory.
@@ -16,6 +16,31 @@ requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 # However, it should be capable
 # of installing tagged source
 # from any Git repository.
+
+###################################################################################################
+# MUST be properly 'source'd, NOT executed
+if [[ -z "${BASH_SOURCE[0]}" ]]; then
+    >&2 echo "FATAL: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    return 1
+fi
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    >&2 echo "FATAL: Aborting, script '$0' MUST be sourced instead of executed"
+    return 1
+fi
+
+###################################################################################################
+# Configure
+if [[ ! -v boHomeInstaller ]]; then
+    if [[ -v XDG_CACHE_HOME ]]; then
+        : "${boHomeInstaller:=${XDG_CACHE_HOME}/boInstaller}"
+    else
+        : "${boHomeInstaller:=${HOME}/.cache/boInstaller}"
+    fi
+fi
+>&2 echo "DEBUG: using boHomeInstaller = '${boHomeInstaller}'"
+# TODO: declare -rx boHomeInstaller
+
+###################################################################################################
 
 _install() {
     # Install source
@@ -41,6 +66,7 @@ _install() {
     # Create a temporary directory
     # TODO: test this 'mktemp' call on various OSes
     local _DirTmp
+    # shellcheck disable=SC2154
     _DirTmp=$(mktemp -d "${boHomeInstaller}"/.XXXXXX)
     local -r _DirTmp
     mkdir -p "${_DirTmp}"
@@ -104,13 +130,6 @@ _main() {
 
 # shellcheck disable=SC2034
 boInstalledInto=$(_main "$@")
-
-###################################################################################################
-# Make this shell "habitable" again
-# TODO: save and restore shell options instead
-set -o pipefail
-set +o errexit
-set +o nounset
 
 ###################################################################################################
 : <<'DisabledContent'

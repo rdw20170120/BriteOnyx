@@ -4,6 +4,8 @@
 # NO: set -ET
 set -euo pipefail
 
+# TODO: consider whether this can be refactored into a 'from_profile.bash' script
+
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 # shellcheck disable=SC2154
