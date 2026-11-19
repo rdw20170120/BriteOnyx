@@ -37,7 +37,7 @@ boFramework=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/framework
 
 ###################################################################################################
 # Bootstrap BriteOnyx framework
-_Script="${boFramework}"/bash/startup/bootstrap.bash
+_Script="${boFramework}"/bash/bootstrap.bash
 if [[ -r "${_Script}" ]]; then
     >&2 echo "TRACE: Sourcing script '${_Script}'"
     source "${_Script}"
@@ -57,7 +57,7 @@ set -euo pipefail
 ###################################################################################################
 # Configure BriteOnyx framework
 requireBriteOnyx
-source "$(require "${boFramework}"/bash/startup/from_project_profile.bash)"
+source "$(require "${boFramework}"/bash/from_project_profile.bash)"
 
 ###################################################################################################
 # Finish project-specific configuration
