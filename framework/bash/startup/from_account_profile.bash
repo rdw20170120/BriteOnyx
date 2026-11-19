@@ -10,7 +10,3 @@ requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 # shellcheck disable=SC2154
 source "$(require "${boFramework}"/bash/startup/entry_point.bash)"
-
-###################################################################################################
-: <<'DisabledContent'
-DisabledContent

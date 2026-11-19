@@ -199,6 +199,9 @@ requireToBeSourced() {
     local _Executable=$1
     local _Script=$2
 
+    if [[ "${_Executable}" != bash ]]; then
+        >&2 echo "DEBUG: executable '$0' is NOT 'bash' in '${_Script}'"
+    fi
     if [[ -z "${_Script}" ]]; then
         >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
         return 1
@@ -211,11 +214,3 @@ requireToBeSourced() {
     return 0
 }
 declare -frx requireToBeSourced
-
-###################################################################################################
-: <<'DisabledContent'
-Troubleshooting Bash:
-    set -o verbose; set -o errtrace; set -o functrace ; set -o xtrace
-    # Code to troubleshoot
-    set +o errtrace; set +o functrace ; set +o xtrace ; set +o verbose
-DisabledContent

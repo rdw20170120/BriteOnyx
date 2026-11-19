@@ -130,7 +130,3 @@ _main() {
 
 # shellcheck disable=SC2034
 boInstalledInto=$(_main "$@")
-
-###################################################################################################
-: <<'DisabledContent'
-DisabledContent
