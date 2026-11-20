@@ -31,7 +31,7 @@ changeDirectoryIn prjHome
 
 logDone "Project successfully activated in ${prjHome}"
 
-unset _Script
+unset -v _Script
 
 # TODO: refactor
 declare -x boFormatDateGls="%Y%m%d_%H%M%S.%N"
@@ -69,4 +69,30 @@ source "$(require "${boFramework}"/bash/l/all.bash)"
 # source $(parentOf ${BASH_SOURCE})/onError.bash
 # trap 'onError "LINENO" "BASH_LINENO" "${BASH_COMMAND}" "${?}"' ERR
 # trap 'echo "Hello there, I caught exit $? from $(caller), ${FUNC_NAME}, ${LINENO}, ${BASH_LINENO}"' EXIT
+
+executing() {
+    # Acknowledge that function $2 defined in script $1 is executing now
+    # Calling this function should be the first executable line
+    # in every significant function--with few low-level exceptions.
+    # $1 = pathname of defining script (e.g., from "${BASH_SOURCE[0]}")
+    # $2 = name of executing function (e.g., from "${FUNCNAME[0]}")
+    if [[ $# -ne 2 ]]; then
+        >&2 echo "FATAL: Function 'executing' requires 2 arguments instead of $#"
+        exit 1
+    fi
+
+    local _Function=$2
+    local _Pathname=$1
+    _Pathname=$(absolute "${_Pathname}")
+
+    # shellcheck disable=SC2034
+    if >/dev/null declare -F logCall; then
+        logCall "${_Function}"
+    fi
+
+    # TODO: verify that executing function is part of the current BriteOnyx framework
+
+    return 0
+}
+declare -frx executing
 

@@ -3,17 +3,14 @@
 # NO: set -ET
 set -euo pipefail
 
-# BASH_SOURCE[0]=environment appears to indicate that a script was executed at the CLI prompt
-# TODO: What does BASH_LINENO[0]=0 mean?
-
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    >&2 echo "FATAL: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
     return 1
 fi
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    >&2 echo "FATAL: Aborting, script '$0' MUST be sourced instead of executed"
+    >&2 echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
     return 1
 fi
 
@@ -23,7 +20,7 @@ absolute() {
     # Return absolute pathname of file system entry $1
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
     if [[ $# -ne 1 ]]; then
-        >&2 echo "FATAL: Function 'absolute' requires 1 argument instead of $#"
+        >&2 echo "ERROR: Function 'absolute' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -45,7 +42,7 @@ baseOf() {
     # Return base of pathname $1
     # $1 = pathname of a file system entry
     if [[ $# -ne 1 ]]; then
-        >&2 echo "FATAL: Function 'baseOf' requires 1 argument instead of $#"
+        >&2 echo "ERROR: Function 'baseOf' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -60,7 +57,7 @@ dirOf() {
     # Return directory of pathname $1, self if it is a directory
     # $1 = pathname of a file system entry
     if [[ $# -ne 1 ]]; then
-        >&2 echo "FATAL: Function 'dirOf' requires 1 argument instead of $#"
+        >&2 echo "ERROR: Function 'dirOf' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -75,37 +72,43 @@ dirOf() {
 }
 declare -frx dirOf
 
-executing() {
-    # Acknowledge that function $2 defined in script $1 is executing now
-    # Calling this function should be the first executable line
-    # in every significant function--with few low-level exceptions.
-    # $1 = pathname of defining script (e.g., from "${BASH_SOURCE[0]}")
-    # $2 = name of executing function (e.g., from "${FUNCNAME[0]}")
-    if [[ $# -ne 2 ]]; then
-        >&2 echo "FATAL: Function 'executing' requires 2 arguments instead of $#"
+library() {
+    # Return absolute path of named ($1) library script,
+    # OR abort with an error
+    # $1 = (partial) name of library script
+    if [[ $# -ne 1 ]]; then
+        >&2 echo "ERROR: Function 'library' requires 1 argument instead of $#"
         exit 1
     fi
 
-    local _Function=$2
-    local _Pathname=$1
-    _Pathname=$(absolute "${_Pathname}")
+    local _Name=$1
 
-    # shellcheck disable=SC2034
-    if >/dev/null declare -F logCall; then
-        logCall "${_Function}"
+    # shellcheck disable=SC2154
+    _Result=${boFrmLib}/${_Name}.bash
+    if [[ -r "${_Result}" ]]; then
+        require "${_Result}"
+        return 0
+    else
+        >&2 echo "DEBUG: did not find library '${_Result}'"
     fi
-
-    # TODO: verify that executing function is part of the current BriteOnyx framework
-
-    return 0
+    _Result=${boFrmLib}/${_Name}
+    if [[ -d "${_Result}" ]]; then
+        _Result=${boFrmLib}/${_Name}/ALL.bash
+        require "${_Result}"
+        return 0
+    else
+        >&2 echo "DEBUG: did not find library '${_Result}'"
+    fi
+    _Result="ERROR: could not find a library for '${_Name}'"
+    require "${_Result}"
 }
-declare -frx executing
+declare -frx library
 
 parentOf() {
     # Return parent directory of pathname $1
     # $1 = pathname of a file system entry
     if [[ $# -ne 1 ]]; then
-        >&2 echo "FATAL: Function 'parentOf' requires 1 argument instead of $#"
+        >&2 echo "ERROR: Function 'parentOf' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -122,7 +125,7 @@ require() {
     # Return absolute pathname of script
     # $1 = pathname of script about to be invoked via "source"
     if [[ $# -ne 1 ]]; then
-        >&2 echo "FATAL: Function 'require' requires 1 argument instead of $#"
+        >&2 echo "ERROR: Function 'require' requires 1 argument instead of $#"
         exit 1
     fi
 
@@ -145,16 +148,16 @@ requireBriteOnyx() {
     # No arguments
 
     if [[ -v boNO ]]; then
-        >&2 echo "FATAL: Found 'boNO' defined, BriteOnyx is explicitly disabled"
+        >&2 echo "ERROR: Found 'boNO' defined, BriteOnyx is explicitly disabled"
         return 1
     fi
     if [[ -v boFramework ]]; then
         if [[ ! -d "${boFramework}" ]]; then
-            >&2 echo "FATAL: 'boFramework' does not reference a directory, need BriteOnyx"
+            >&2 echo "ERROR: 'boFramework' does not reference a directory, need BriteOnyx"
             return 1
         fi
     else
-        >&2 echo "FATAL: Missing 'boFramework', need BriteOnyx"
+        >&2 echo "ERROR: Missing 'boFramework', need BriteOnyx"
         return 1
     fi
 
@@ -167,7 +170,7 @@ requireToBeExecuted() {
     # $1 = name of executable (e.g., from "$0")
     # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
     if [[ $# -ne 2 ]]; then
-        >&2 echo "FATAL: Function 'requireToBeExecuted' requires 2 arguments instead of $#"
+        >&2 echo "ERROR: Function 'requireToBeExecuted' requires 2 arguments instead of $#"
         exit 1
     fi
 
@@ -192,7 +195,7 @@ requireToBeSourced() {
     # $1 = name of executable (e.g., from "$0")
     # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
     if [[ $# -ne 2 ]]; then
-        >&2 echo "FATAL: Function 'requireToBeSourced' requires 2 arguments instead of $#"
+        >&2 echo "ERROR: Function 'requireToBeSourced' requires 2 arguments instead of $#"
         exit 1
     fi
 

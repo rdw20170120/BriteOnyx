@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1090
 # vim: set ft=bash:
-# NO: set -ET
-set -euo pipefail
+set -bBehu
+set +aCEfHkmnPtT
+set -o history
+set -o pipefail
+set -o vi
+set +o emacs
+set +o ignoreeof
+set +o posix
+shopt -s bash_source_fullpath checkhash checkjobs checkwinsize complete_fullquote dotglob expand_aliases extquote failglob force_fignore globskipdots globstar gnu_errfmt histappend huponexit inherit_errexit interactive_comments lastpipe no_empty_cmd_completion nocaseglob nocasematch nullglob patsub_replacement progcomp progcomp_alias promptvars shift_verbose varredir_close xpg_echo
+shopt -u array_expand_once autocd cdable_vars cdspell cmdhist direxpand dirspell execfail extdebug extglob globasciiranges histreedit hostcomplete lithist localvar_inherit localvar_unset mailwarn noexpand_translation sourcepath
 
 ###################################################################################################
 if [[ -v boIsTesting ]]; then
