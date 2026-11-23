@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
-# NO: set -ET
-set -euo pipefail
+
+configureShellForScripting
 
 _main() {
     return 0

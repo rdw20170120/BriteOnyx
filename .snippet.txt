@@ -24,9 +24,6 @@ declare -rx prjDirLib
 logVariable prjDirLib
 requireDirectoryIn prjDirLib
 
-_Script=${prjDirLib}/project_override.bash
-require "${_Script}" && source "${_Script}"
-
 changeDirectoryIn prjHome
 
 logDone "Project successfully activated in ${prjHome}"
@@ -95,4 +92,33 @@ executing() {
     return 0
 }
 declare -frx executing
+
+###################################################################################################
+# To safely test this script:
+# try:
+# TODO: alias retest='bash -c ". source_me.bash"'
+
+###################################################################################################
+# MUST be the last executable lines, to make the resulting shell 'habitable'
+set -o pipefail
+set +o errexit
+set +o nounset
+set +o errtrace
+set +o functrace
+set +o xtrace
+set +o verbose
+doctor
+
+###################################################################################################
+# Crucial to set 'umask' early, before modifying the filesystem
+>/dev/null umask -S u=rwx,g=,o=
+
+# TODO: importForAccount core
+# TODO: importForProject core
+
+###################################################################################################
+# Reapply changes to paths
+sourceScript "${XDG_CONFIG_HOME}"/MANPATH.env
+sourceScript "${XDG_CONFIG_HOME}"/PATH.env
+set -euo pipefail
 
