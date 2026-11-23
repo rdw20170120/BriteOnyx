@@ -3,15 +3,6 @@
 # vim: set ft=bash:
 
 ###################################################################################################
-if [[ -v boIsTesting ]]; then
-    PS4='+${BASH_SOURCE[0]}> '
-    # set -o verbose
-    set -o errtrace
-    set -o functrace
-    set -o xtrace
-fi
-
-###################################################################################################
 # Kickstart Bash
 _Script=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/kickstart.bash
 if [[ -r "${_Script}" ]]; then
@@ -21,7 +12,6 @@ else
     >&2 echo "ERROR: Missing script '${_Script}'"
     exit 1
 fi
-configureShellForScripting
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 ###################################################################################################

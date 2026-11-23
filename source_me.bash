@@ -4,7 +4,7 @@
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    >&2 echo "FATAL: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
     return 1
 fi
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
@@ -14,7 +14,7 @@ fi
 
 ###################################################################################################
 if [[ -v boNO ]]; then
-    >&2 echo "FATAL: Found 'boNO' defined, BriteOnyx is explicitly disabled"
+    >&2 echo "ERROR: Found 'boNO' defined, BriteOnyx is explicitly disabled"
     return 1
 fi
 
@@ -35,6 +35,6 @@ if [[ -r "${_Script}" ]]; then
         # NOTE: in typical use, nothing past this line will execute due to 'exec'
     fi
 else
-    >&2 echo "FATAL: Missing script '${_Script}'"
+    >&2 echo "ERROR: Missing script '${_Script}'"
     return 1
 fi

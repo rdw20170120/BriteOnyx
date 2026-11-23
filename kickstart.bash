@@ -31,11 +31,11 @@ fi
 >&2 echo "DEBUG: 'POSIXLY_CORRECT'='${POSIXLY_CORRECT:-}'"
 
 if (("${BASH_VERSINFO[0]:-}" < 5)); then
-    >&2 echo "ERROR: Aborting, written for Bash version 5.3.20, NOT '${BASH_VERSION}'"
+    >&2 echo "FATAL: Aborting, written for Bash version 5.3.20, NOT '${BASH_VERSION}'"
     exit 1
 fi
 if [[ "${POSIXLY_CORRECT:-}" == 'y' ]]; then
-    >&2 echo "ERROR: Aborting, POSIXLY_CORRECT='y', NOT written for POSIX"
+    >&2 echo "FATAL: Aborting, POSIXLY_CORRECT='y', NOT written for POSIX"
     exit 1
 fi
 
@@ -76,8 +76,11 @@ absolute() {
 declare -frx absolute
 
 applySetLongOption() { set "$2" "$1"; }
+declare -frx applySetLongOption
 applySetShortOption() { set "$2""$1"; }
+declare -frx applySetShortOption
 applyShoptOption() { shopt "$2" "$1"; }
+declare -frx applyShoptOption
 
 baseOf() {
     # Return base of pathname $1
@@ -95,8 +98,11 @@ baseOf() {
 declare -frx baseOf
 
 checkSetLongOption() { reportSetLongOption "$1" | grep --fixed-strings --word-regexp "$2" >/dev/null; }
+declare -frx checkSetLongOption
 checkSetShortOption() { reportSetShortOption "$1" | grep --fixed-strings --word-regexp "$2" >/dev/null; }
+declare -frx checkSetShortOption
 checkShoptOption() { reportShoptOption "$1" | grep --fixed-strings --word-regexp "$2" >/dev/null; }
+declare -frx checkShoptOption
 
 configureShellForInteracting() {
     # Configure Bash shell options for interacting
@@ -186,6 +192,7 @@ configureShellForInteracting() {
 }
 declare -frx configureShellForInteracting
 
+# shellcheck disable=SC2120
 configureShellForScripting() {
     # Configure Bash shell options for scripting
     # No arguments
@@ -194,8 +201,24 @@ configureShellForScripting() {
         exit 1
     fi
 
+    # NOTE: these are crucial to BriteOnyx design
+    maybeEnableSetLongOption errexit
+    maybeEnableSetLongOption nounset
+    maybeEnableSetLongOption pipefail
+
+    # These are helpful/useful, but not as crucial (I think)
+    maybeDisableSetLongOption allexport
     maybeDisableSetLongOption emacs
+    maybeDisableSetLongOption histexpand
     maybeDisableSetLongOption ignoreeof
+    maybeDisableSetLongOption keyword
+    maybeDisableSetLongOption monitor
+    maybeDisableSetLongOption noclobber
+    maybeDisableSetLongOption noexec
+    maybeDisableSetLongOption noglob
+    maybeDisableSetLongOption nolog
+    maybeDisableSetLongOption onecmd
+    maybeDisableSetLongOption physical
     maybeDisableSetLongOption posix
     maybeDisableSetShortOption C
     maybeDisableSetShortOption E
@@ -208,14 +231,65 @@ configureShellForScripting() {
     maybeDisableSetShortOption m
     maybeDisableSetShortOption n
     maybeDisableSetShortOption t
+    maybeDisableShoptOption array_expand_once
+    maybeDisableShoptOption autocd
+    maybeDisableShoptOption cdable_vars
+    maybeDisableShoptOption cdspell
+    maybeDisableShoptOption cmdhist
+    maybeDisableShoptOption direxpand
+    maybeDisableShoptOption dirspell
+    maybeDisableShoptOption execfail
+    maybeDisableShoptOption extdebug
+    maybeDisableShoptOption extglob
+    maybeDisableShoptOption globasciiranges
+    maybeDisableShoptOption histreedit
+    maybeDisableShoptOption hostcomplete
+    maybeDisableShoptOption lithist
+    maybeDisableShoptOption localvar_inherit
+    maybeDisableShoptOption localvar_unset
+    maybeDisableShoptOption mailwarn
+    maybeDisableShoptOption noexpand_translation
+    maybeDisableShoptOption sourcepath
+    maybeEnableSetLongOption braceexpand
+    maybeEnableSetLongOption hashall
     maybeEnableSetLongOption history
-    maybeEnableSetLongOption pipefail
+    maybeEnableSetLongOption interactive-comments
+    maybeEnableSetLongOption notify
     maybeEnableSetLongOption vi
     maybeEnableSetShortOption B
     maybeEnableSetShortOption b
     maybeEnableSetShortOption e
     maybeEnableSetShortOption h
     maybeEnableSetShortOption u
+    maybeEnableShoptOption bash_source_fullpath
+    maybeEnableShoptOption checkhash
+    maybeEnableShoptOption checkjobs
+    maybeEnableShoptOption checkwinsize
+    maybeEnableShoptOption complete_fullquote
+    maybeEnableShoptOption dotglob
+    maybeEnableShoptOption expand_aliases
+    maybeEnableShoptOption extquote
+    maybeEnableShoptOption failglob
+    maybeEnableShoptOption force_fignore
+    maybeEnableShoptOption globskipdots
+    maybeEnableShoptOption globstar
+    maybeEnableShoptOption gnu_errfmt
+    maybeEnableShoptOption histappend
+    maybeEnableShoptOption huponexit
+    maybeEnableShoptOption inherit_errexit
+    maybeEnableShoptOption interactive_comments
+    maybeEnableShoptOption lastpipe
+    maybeEnableShoptOption no_empty_cmd_completion
+    maybeEnableShoptOption nocaseglob
+    maybeEnableShoptOption nocasematch
+    maybeEnableShoptOption nullglob
+    maybeEnableShoptOption patsub_replacement
+    maybeEnableShoptOption progcomp
+    maybeEnableShoptOption progcomp_alias
+    maybeEnableShoptOption promptvars
+    maybeEnableShoptOption shift_verbose
+    maybeEnableShoptOption varredir_close
+    maybeEnableShoptOption xpg_echo
 
     return 0
 }
@@ -259,7 +333,7 @@ installBriteOnyx() {
         BriteOnyx "${_Tag}" \
         https://github.com/rdw20170120/BriteOnyx.git
     # shellcheck disable=SC2154
-    declare boFramework=${boInstalledInto}/framework
+    declare -gx boFramework=${boInstalledInto}/framework
     >&2 echo "INFO: boFramework=${boFramework}"
 
     return 0
@@ -267,11 +341,17 @@ installBriteOnyx() {
 declare -frx installBriteOnyx
 
 maybeDisableSetLongOption() { checkSetLongOption "$1" 'off' || applySetLongOption "$1" '+o'; }
+declare -frx maybeDisableSetLongOption
 maybeDisableSetShortOption() { checkSetShortOption "$1" 'off' || applySetShortOption "$1" '+'; }
+declare -frx maybeDisableSetShortOption
 maybeDisableShoptOption() { checkShoptOption "$1" 'off' || applyShoptOption "$1" '-u'; }
+declare -frx maybeDisableShoptOption
 maybeEnableSetLongOption() { checkSetLongOption "$1" 'on' || applySetLongOption "$1" '-o'; }
+declare -frx maybeEnableSetLongOption
 maybeEnableSetShortOption() { checkSetShortOption "$1" 'on' || applySetShortOption "$1" '-'; }
+declare -frx maybeEnableSetShortOption
 maybeEnableShoptOption() { checkShoptOption "$1" 'on' || applyShoptOption "$1" '-s'; }
+declare -frx maybeEnableShoptOption
 
 parentOf() {
     # Return parent directory of pathname $1
@@ -290,6 +370,7 @@ parentOf() {
 declare -frx parentOf
 
 reportSetLongOption() { set -o | grep --fixed-strings "$1"; }
+declare -frx reportSetLongOption
 reportSetShortOption() {
     case $- in
     *"$1"*)
@@ -300,7 +381,9 @@ reportSetShortOption() {
         ;;
     esac
 }
+declare -frx reportSetShortOption
 reportShoptOption() { shopt | grep --fixed-strings "$1"; }
+declare -frx reportShoptOption
 
 requireScript() {
     # Require script $1, expecting it to be invoked via Bash 'source' command
@@ -338,7 +421,7 @@ requireBriteOnyx() {
     fi
     if [[ -v boFramework ]]; then
         if [[ ! -d "${boFramework}" ]]; then
-            >&2 echo "ERROR: 'boFramework' does not reference a directory, need BriteOnyx"
+            >&2 echo "ERROR: 'boFramework' does NOT reference a directory, need BriteOnyx"
             return 1
         fi
     else
@@ -417,3 +500,5 @@ sourceScript() {
     source "${_Script}" "$@"
 }
 declare -frx sourceScript
+
+configureShellForScripting

@@ -14,11 +14,11 @@ sourceScript "${boFramework}"/bash/bootstrap.bash
 # Establish reference to library of Bash functions
 # shellcheck disable=SC2154
 boFrmLib=${boFramework}/bash/lib
-declare -rx boFrmLib
+declare -grx boFrmLib
 
 # TODO: importFromFramework core
 
 ###################################################################################################
 # Export and freeze reference to BriteOnyx framework
-declare -rx boFramework
+declare -grx boFramework
 # logDone "BriteOnyx framework successfully activated in ${boFramework}"
