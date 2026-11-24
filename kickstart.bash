@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2034
+# shellcheck disable=SC1090,SC2034,SC2154
 # vim: set ft=bash:
 
 # For now, hard-code shell option assignments
@@ -81,6 +81,147 @@ applySetShortOption() { set "$2""$1"; }
 declare -frx applySetShortOption
 applyShoptOption() { shopt "$2" "$1"; }
 declare -frx applyShoptOption
+
+# shellcheck disable=SC2120
+assembleManpath() {
+    # Assemble MANPATH environment variable
+    if (($# != 0)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
+        exit 1
+    fi
+
+    [[ -z "${boManpathOriginal:-}" ]] && boManpathOriginal=${MANPATH:-}
+    declare -grx boManpathOriginal
+
+    boManpath=${boProjectManpath:-}
+    boManpath+=:${boAccountManpath:-}
+    boManpath+=:${boSystemManpath:-}
+    declare -gx boManpath
+
+    MANPATH=${boManpath}
+    declare -gx MANPATH
+
+    return 0
+}
+declare -frx assembleManpath
+
+# shellcheck disable=SC2120
+assemblePath() {
+    # Assemble executable PATH environment variable
+    if (($# != 0)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
+        exit 1
+    fi
+
+    [[ -z "${boPathOriginal:-}" ]] && boPathOriginal=${PATH:-}
+    declare -grx boPathOriginal
+
+    boPath=${boProjectPath:-}
+    boPath+=:${boAccountPath:-}
+    boPath+=:${boSystemPath:-}
+    declare -gx boPath
+
+    PATH=${boPath}
+    declare -gx PATH
+
+    return 0
+}
+declare -frx assemblePath
+
+# shellcheck disable=SC2120
+assemblePaths() {
+    # Assemble all paths and related environment variables
+    if (($# != 0)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
+        exit 1
+    fi
+
+    assembleManpath
+    assemblePath
+    assembleXdg
+
+    return 0
+}
+declare -frx assemblePaths
+
+# shellcheck disable=SC2120
+assembleXdg() {
+    # Assemble XDG environment variables
+    if (($# != 0)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
+        exit 1
+    fi
+
+    # Apply XDG standard defaults to make them explicit
+    # REF: https://specifications.freedesktop.org/basedir/latest/
+    # SEE: https://linuxdork.com/blog/xdg-base-directories-explained/
+    # NOTE: all these environment variables should contain ONLY absolute paths,
+    # relative paths are considered invalid and should be ignored
+
+    # TODO: Leverage XDG standard to relocate history files, etc.
+    # TODO: Test for absolute paths
+    # TODO: Refactor a helper function to make these into one-liners
+
+    # These are intended to be system-wide
+
+    boXdgDirsConfig=${boXdgDirsConfig:-/etc/xdg}
+    declare -gx boXdgDirsConfig
+    XDG_CONFIG_DIRS=${XDG_CONFIG_DIRS:-${boXdgDirsConfig}}
+    declare -gx XDG_CONFIG_DIRS
+
+    boXdgDirsData=${boXdgDirsData:-/usr/local/share:/usr/share}
+    declare -gx boXdgDirsData
+    XDG_DATA_DIRS=${XDG_DATA_DIRS:-${boXdgDirsData}}
+    declare -gx XDG_DATA_DIRS
+
+    # These are intended to be user-specific
+
+    boXdgHomeBin=${boXdgHomeBin:-${HOME}/.local/bin}
+    declare -gx boXdgHomeBin
+    # Not named in the official standard, but named by convention elsewhere
+    XDG_BIN_HOME=${XDG_BIN_HOME:-${boXdgHomeBin}}
+    declare -gx XDG_BIN_HOME
+
+    boXdgHomeCache=${boXdgHomeCache:-${HOME}/.cache}
+    declare -gx boXdgHomeCache
+    XDG_CACHE_HOME=${XDG_CACHE_HOME:-${boXdgHomeCache}}
+    declare -gx XDG_CACHE_HOME
+
+    boXdgHomeConfig=${boXdgHomeConfig:-${HOME}/.config}
+    declare -gx boXdgHomeConfig
+    XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${boXdgHomeConfig}}
+    declare -gx XDG_CONFIG_HOME
+
+    boXdgHomeData=${boXdgHomeData:-${HOME}/.local/share}
+    declare -gx boXdgHomeData
+    XDG_DATA_HOME=${XDG_DATA_HOME:-${boXdgHomeData}}
+    declare -gx XDG_DATA_HOME
+
+    boXdgHomeState=${boXdgHomeState:-${HOME}/.local/state}
+    declare -gx boXdgHomeState
+    XDG_STATE_HOME=${XDG_STATE_HOME:-${boXdgHomeState}}
+    declare -gx XDG_STATE_HOME
+
+    # TODO: XDG_RUNTIME_DIR (too complicated?)
+
+    ###################################################################################################
+    # Apparently Apple macOS has its own "rendition" of this standard,
+    # which it seems is not really used and should be avoided
+    # REF: https://gist.github.com/roalcantara/107ba66dfa3b9d023ac9329e639bc58c
+    #
+    # It references these other variables:
+    # XDG_DESKTOP_DIR
+    # XDG_DOCUMENTS_DIR
+    # XDG_DOWNLOAD_DIR
+    # XDG_MUSIC_DIR
+    # XDG_PICTURES_DIR
+    # XDG_PUBLICSHARE_DIR
+    # XDG_TEMPLATES_DIR
+    # XDG_VIDEOS_DIR
+
+    return 0
+}
+declare -frx assembleXdg
 
 baseOf() {
     # Return base of pathname $1
@@ -501,4 +642,6 @@ sourceScript() {
 }
 declare -frx sourceScript
 
+# Invoke some essential functions, before returning to caller, so they do not have to do so
 configureShellForScripting
+assemblePaths

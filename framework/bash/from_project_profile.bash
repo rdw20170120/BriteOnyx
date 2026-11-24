@@ -12,6 +12,7 @@ requireBriteOnyx
 # so it works in project home directory
 # and all subdirectories (subprojects)
 boPrjDirExe=./bin
+declare -grx boPrjDirExe
 
 # Yes, it is redundant perhaps to have both 'boPrjDirExe' and 'boPrjPathExe'
 # but they serve different purposes
@@ -19,6 +20,7 @@ boPrjDirExe=./bin
 # 'boPrjPathExe' is the project's portion of PATH, providing a hook for extension
 # shellcheck disable=SC2034
 boPrjPathExe=${boPrjDirExe}
+declare -grx boPrjPathExe
 
 # shellcheck disable=SC2154
 sourceScript "${boFramework}"/bash/entry_point.bash
@@ -28,6 +30,7 @@ sourceScript "${boFramework}"/bash/entry_point.bash
 # TODO: declare -grx boProject
 # TODO: requireDirectoryIn boProject
 # TODO: changeDirectoryIn boProject
+# shellcheck disable=SC2154,SC2164
 cd "${boProject}"
 
 # TODO: forbidVariable boPrjDirExe

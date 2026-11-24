@@ -4,12 +4,13 @@
 
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
-configureShellForScripting
 
 ###################################################################################################
 # Bootstrap BriteOnyx framework
 # shellcheck disable=SC2154
 sourceScript "${boFramework}"/bash/bootstrap.bash
+
+assemblePaths
 
 # Establish reference to library of Bash functions
 # shellcheck disable=SC2154
