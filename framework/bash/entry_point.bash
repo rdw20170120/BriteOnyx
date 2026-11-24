@@ -10,7 +10,7 @@ requireBriteOnyx
 # shellcheck disable=SC2154
 sourceScript "${boFramework}"/bash/bootstrap.bash
 
-assemblePaths
+assembleAll
 
 # Establish reference to library of Bash functions
 # shellcheck disable=SC2154

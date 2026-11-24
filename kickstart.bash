@@ -83,6 +83,22 @@ applyShoptOption() { shopt "$2" "$1"; }
 declare -frx applyShoptOption
 
 # shellcheck disable=SC2120
+assembleAll() {
+    # Assemble all paths and related environment variables
+    if (($# != 0)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
+        exit 1
+    fi
+
+    assembleXdg
+    assembleManpath
+    assemblePath
+
+    return 0
+}
+declare -frx assembleAll
+
+# shellcheck disable=SC2120
 assembleManpath() {
     # Assemble MANPATH environment variable
     if (($# != 0)); then
@@ -90,16 +106,17 @@ assembleManpath() {
         exit 1
     fi
 
-    [[ -z "${boManpathOriginal:-}" ]] && boManpathOriginal=${MANPATH:-}
-    declare -grx boManpathOriginal
+    [[ -n "${boManpathOriginal:-}" ]] || boManpathOriginal=${MANPATH:-}
+    [[ -n "${boManpathOriginal:-}" ]] && declare -grx boManpathOriginal
 
-    boManpath=${boProjectManpath:-}
-    boManpath+=:${boAccountManpath:-}
-    boManpath+=:${boSystemManpath:-}
-    declare -gx boManpath
+    boManpath=
+    [[ -n "${boProjectManpath:-}" ]] && boManpath+=${boProjectManpath:-}:
+    [[ -n "${boAccountManpath:-}" ]] && boManpath+=${boAccountManpath:-}:
+    [[ -n "${boSystemManpath:-}" ]] && boManpath+=${boSystemManpath:-}
+    [[ -n "${boManpath:-}" ]] && declare -gx boManpath
 
-    MANPATH=${boManpath}
-    declare -gx MANPATH
+    [[ -n "${boManpath:-}" ]] && MANPATH=${boManpath:-}
+    [[ -n "${MANPATH:-}" ]] && declare -gx MANPATH
 
     return 0
 }
@@ -113,36 +130,21 @@ assemblePath() {
         exit 1
     fi
 
-    [[ -z "${boPathOriginal:-}" ]] && boPathOriginal=${PATH:-}
-    declare -grx boPathOriginal
+    [[ -n "${boPathOriginal:-}" ]] || boPathOriginal=${PATH:-}
+    [[ -n "${boPathOriginal:-}" ]] && declare -grx boPathOriginal
 
-    boPath=${boProjectPath:-}
-    boPath+=:${boAccountPath:-}
-    boPath+=:${boSystemPath:-}
-    declare -gx boPath
+    boPath=
+    [[ -n "${boProjectPath:-}" ]] && boPath+=${boProjectPath:-}:
+    [[ -n "${boAccountPath:-}" ]] && boPath+=${boAccountPath:-}:
+    [[ -n "${boSystemPath:-}" ]] && boPath+=${boSystemPath:-}
+    [[ -n "${boPath:-}" ]] && declare -gx boPath
 
-    PATH=${boPath}
-    declare -gx PATH
+    [[ -n "${boPath:-}" ]] && PATH=${boPath:-}
+    [[ -n "${PATH:-}" ]] && declare -gx PATH
 
     return 0
 }
 declare -frx assemblePath
-
-# shellcheck disable=SC2120
-assemblePaths() {
-    # Assemble all paths and related environment variables
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
-
-    assembleManpath
-    assemblePath
-    assembleXdg
-
-    return 0
-}
-declare -frx assemblePaths
 
 # shellcheck disable=SC2120
 assembleXdg() {
@@ -202,7 +204,7 @@ assembleXdg() {
     XDG_STATE_HOME=${XDG_STATE_HOME:-${boXdgHomeState}}
     declare -gx XDG_STATE_HOME
 
-    # TODO: XDG_RUNTIME_DIR (too complicated?)
+    # NOTE: XDG_RUNTIME_DIR (too complicated?)
 
     ###################################################################################################
     # Apparently Apple macOS has its own "rendition" of this standard,
@@ -455,12 +457,6 @@ dirOf() {
 }
 declare -frx dirOf
 
-importFromFramework() {
-    >&2 echo "TODO: implement ${FUNCNAME[0]}"
-    return 0
-}
-declare -frx importFromFramework
-
 installBriteOnyx() {
     # Install BriteOnyx framework tagged $1
     # $1 = tag (version) to install
@@ -644,4 +640,4 @@ declare -frx sourceScript
 
 # Invoke some essential functions, before returning to caller, so they do not have to do so
 configureShellForScripting
-assemblePaths
+assembleAll

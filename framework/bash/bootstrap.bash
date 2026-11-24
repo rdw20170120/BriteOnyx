@@ -7,6 +7,12 @@ requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 >&2 echo "TODO: implement bootstrap"
 
+importFromFramework() {
+    >&2 echo "TODO: implement ${FUNCNAME[0]}"
+    return 0
+}
+declare -frx importFromFramework
+
 library() {
     # Return absolute path of named ($1) library script,
     # OR abort with an error
