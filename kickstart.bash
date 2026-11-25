@@ -500,7 +500,7 @@ installBriteOnyx() {
     declare -gx boFramework=${boInstalledInto}/framework
     >&2 echo "INFO: boFramework=${boFramework}"
 
-    return 0
+    requireBriteOnyx
 }
 declare -frx installBriteOnyx
 
@@ -602,6 +602,7 @@ requireScript() {
 }
 declare -frx requireScript
 
+# shellcheck disable=SC2120
 requireBriteOnyx() {
     # Require BriteOnyx framework
     # No arguments

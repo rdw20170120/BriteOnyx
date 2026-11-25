@@ -22,7 +22,6 @@ boFramework=${boProjectHome}/framework
 
 ###################################################################################################
 # Configure BriteOnyx framework
-requireBriteOnyx
 sourceRequiredScript "${XDG_CONFIG_HOME}"/bash/ALL.bash
 sourceRequiredScript "${boProjectHome}"/ALL.bash
 sourceRequiredScript "${boFramework}"/bash/from_project_profile.bash
@@ -45,5 +44,6 @@ if [[ -v boIsTesting ]]; then
     project-quality
     project-tag
     project-test
+    # Don't forget to 'exit', for testing
     exit 0
 fi
