@@ -10,7 +10,7 @@ if [[ -r "${_Script}" ]]; then
     source "${_Script}"
 else
     >&2 echo "ERROR: Missing script '${_Script}'"
-    exit 1
+    return 1
 fi
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
