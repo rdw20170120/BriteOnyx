@@ -22,14 +22,14 @@ fi
 
 ###################################################################################################
 # Launch a new interactive Bash shell, configured by the project's profile script
-_Script=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/briteonyx.bashrc
+_Script=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/briteonyx/.bashrc
 if [[ -r "${_Script}" ]]; then
     # Order of Bash options matters (long first, short last)
     # shellcheck disable=SC2037
     _Cmd="bash --noprofile --rcfile ${_Script} -i"
     if [[ -v boIsTesting ]]; then
-        >&2 echo "TRACE: Launching subshell with script '${_Script}'"
         >&2 echo "DEBUG: boIsTesting is defined, skipping 'exec'"
+        >&2 echo "TRACE: Launching subshell with script '${_Script}'"
         ${_Cmd}
     else
         >&2 echo "TRACE: 'exec'ing into new shell with script '${_Script}'"

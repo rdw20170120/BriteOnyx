@@ -20,5 +20,5 @@ sourceRequiredScript "${boFramework}"/bash/entry_point.bash
 
 ###################################################################################################
 # shellcheck disable=SC2154,SC2164
-cd "${boAccountHome}"
-# TODO: logDone "BriteOnyx framework successfully activated in ${boAccountHome}"
+cd "${HOME}"
+# TODO: logDone "BriteOnyx framework successfully activated in ${HOME}"

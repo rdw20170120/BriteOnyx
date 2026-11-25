@@ -499,7 +499,7 @@ installBriteOnyx() {
     fi
     local -r _Tag=$1
 
-    sourceRequiredScript "${HOME}"/.config/bash/install-source.bash \
+    sourceRequiredScript "${XDG_CONFIG_HOME}"/briteonyx/install-source.bash \
         BriteOnyx "${_Tag}" \
         https://github.com/rdw20170120/BriteOnyx.git
     # shellcheck disable=SC2154
