@@ -1,19 +1,5 @@
 # Ignore these:
+*.bak
 *.out
 .DS_Store
 /tags
-
-# But don't ignore these:
-!*.bash
-!*.list
-!*.md
-!*.txt
-!.gitignore
-!.ignore
-!/.mailmap
-
-# Yet still ignore these:
-*-raw.out
-*.bak
-.ran=*
-/.tmp
