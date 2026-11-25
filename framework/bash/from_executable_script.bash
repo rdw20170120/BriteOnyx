@@ -5,7 +5,7 @@
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 # shellcheck disable=SC2154
-sourceScript "${boFramework}"/bash/entry_point.bash
+sourceRequiredScript "${boFramework}"/bash/entry_point.bash
 
 ###################################################################################################
-# logDone "BriteOnyx framework successfully activated in ${boFramework}"
+# TODO: logDone "BriteOnyx framework successfully activated in ${boFramework}"

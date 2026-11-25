@@ -115,10 +115,3 @@ doctor
 
 # TODO: importForAccount core
 # TODO: importForProject core
-
-###################################################################################################
-# Reapply changes to paths
-sourceScript "${XDG_CONFIG_HOME}"/MANPATH.env
-sourceScript "${XDG_CONFIG_HOME}"/PATH.env
-set -euo pipefail
-

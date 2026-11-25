@@ -25,16 +25,16 @@ library() {
     local _Name=$1
 
     # shellcheck disable=SC2154
-    _Result=${boFrmLib}/${_Name}.bash
+    _Result=${boFrameworkLib}/${_Name}.bash
     if [[ -r "${_Result}" ]]; then
         require "${_Result}"
         return 0
     else
         >&2 echo "DEBUG: did not find library '${_Result}'"
     fi
-    _Result=${boFrmLib}/${_Name}
+    _Result=${boFrameworkLib}/${_Name}
     if [[ -d "${_Result}" ]]; then
-        _Result=${boFrmLib}/${_Name}/ALL.bash
+        _Result=${boFrameworkLib}/${_Name}/ALL.bash
         require "${_Result}"
         return 0
     else

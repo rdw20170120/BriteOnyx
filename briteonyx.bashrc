@@ -16,14 +16,14 @@ requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 ###################################################################################################
 # Since this is BriteOnyx's project repository, use it as the framework
-boProject=$(parentOf "${BASH_SOURCE[0]}")
-boFramework=${boProject}/framework
+boProjectHome=$(parentOf "${BASH_SOURCE[0]}")
+boFramework=${boProjectHome}/framework
 >&2 echo "INFO: boFramework=${boFramework}"
 
 ###################################################################################################
 # Configure BriteOnyx framework
 requireBriteOnyx
-sourceScript "${boFramework}"/bash/from_project_profile.bash
+sourceRequiredScript "${boFramework}"/bash/from_project_profile.bash
 
 ###################################################################################################
 # Execute project scripts when testing BriteOnyx

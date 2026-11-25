@@ -106,17 +106,17 @@ assembleManpath() {
         exit 1
     fi
 
-    [[ -n "${boManpathOriginal:-}" ]] || boManpathOriginal=${MANPATH:-}
-    [[ -n "${boManpathOriginal:-}" ]] && declare -grx boManpathOriginal
+    [[ -n "${boManpathInherited:-}" ]] || boManpathInherited=${MANPATH:-}
+    [[ -n "${boManpathInherited:-}" ]] && declare -gx boManpathInherited=${boManpathInherited}
 
     boManpath=
     [[ -n "${boProjectManpath:-}" ]] && boManpath+=${boProjectManpath:-}:
     [[ -n "${boAccountManpath:-}" ]] && boManpath+=${boAccountManpath:-}:
     [[ -n "${boSystemManpath:-}" ]] && boManpath+=${boSystemManpath:-}
-    [[ -n "${boManpath:-}" ]] && declare -gx boManpath
+    [[ -n "${boManpath:-}" ]] && declare -gx boManpath=${boManpath}
 
     [[ -n "${boManpath:-}" ]] && MANPATH=${boManpath:-}
-    [[ -n "${MANPATH:-}" ]] && declare -gx MANPATH
+    [[ -n "${MANPATH:-}" ]] && declare -gx MANPATH=${MANPATH}
 
     return 0
 }
@@ -130,17 +130,26 @@ assemblePath() {
         exit 1
     fi
 
-    [[ -n "${boPathOriginal:-}" ]] || boPathOriginal=${PATH:-}
-    [[ -n "${boPathOriginal:-}" ]] && declare -grx boPathOriginal
+    [[ -n "${boPathInherited:-}" ]] || boPathInherited=${PATH:-}
+    [[ -n "${boPathInherited:-}" ]] && {
+        declare -gx boPathInherited=${boPathInherited}
+        >&2 echo "DEBUG: boPathInherited='${boPathInherited}'"
+    }
 
     boPath=
     [[ -n "${boProjectPath:-}" ]] && boPath+=${boProjectPath:-}:
     [[ -n "${boAccountPath:-}" ]] && boPath+=${boAccountPath:-}:
     [[ -n "${boSystemPath:-}" ]] && boPath+=${boSystemPath:-}
-    [[ -n "${boPath:-}" ]] && declare -gx boPath
+    [[ -n "${boPath:-}" ]] && {
+        declare -gx boPath=${boPath}
+        >&2 echo "DEBUG: boPath='${boPath}'"
+    }
 
     [[ -n "${boPath:-}" ]] && PATH=${boPath:-}
-    [[ -n "${PATH:-}" ]] && declare -gx PATH
+    [[ -n "${PATH:-}" ]] && {
+        declare -gx PATH=${PATH}
+        >&2 echo "DEBUG: PATH='${PATH}'"
+    }
 
     return 0
 }
@@ -206,7 +215,6 @@ assembleXdg() {
 
     # NOTE: XDG_RUNTIME_DIR (too complicated?)
 
-    ###################################################################################################
     # Apparently Apple macOS has its own "rendition" of this standard,
     # which it seems is not really used and should be avoided
     # REF: https://gist.github.com/roalcantara/107ba66dfa3b9d023ac9329e639bc58c
@@ -240,11 +248,25 @@ baseOf() {
 }
 declare -frx baseOf
 
-checkSetLongOption() { reportSetLongOption "$1" | grep --fixed-strings --word-regexp "$2" >/dev/null; }
+checkSetLongOption() {
+    reportSetLongOption "$1" |
+        grep --fixed-strings --word-regexp "$2" \
+            >/dev/null
+}
 declare -frx checkSetLongOption
-checkSetShortOption() { reportSetShortOption "$1" | grep --fixed-strings --word-regexp "$2" >/dev/null; }
+
+checkSetShortOption() {
+    reportSetShortOption "$1" |
+        grep --fixed-strings --word-regexp "$2" \
+            >/dev/null
+}
 declare -frx checkSetShortOption
-checkShoptOption() { reportShoptOption "$1" | grep --fixed-strings --word-regexp "$2" >/dev/null; }
+
+checkShoptOption() {
+    reportShoptOption "$1" |
+        grep --fixed-strings --word-regexp "$2" \
+            >/dev/null
+}
 declare -frx checkShoptOption
 
 configureShellForInteracting() {
@@ -466,7 +488,7 @@ installBriteOnyx() {
     fi
     local -r _Tag=$1
 
-    sourceScript "${HOME}"/.config/bash/install-source.bash \
+    sourceRequiredScript "${HOME}"/.config/bash/install-source.bash \
         BriteOnyx "${_Tag}" \
         https://github.com/rdw20170120/BriteOnyx.git
     # shellcheck disable=SC2154
@@ -477,17 +499,40 @@ installBriteOnyx() {
 }
 declare -frx installBriteOnyx
 
-maybeDisableSetLongOption() { checkSetLongOption "$1" 'off' || applySetLongOption "$1" '+o'; }
+maybeDisableSetLongOption() {
+    checkSetLongOption "$1" 'off' ||
+        applySetLongOption "$1" '+o'
+}
 declare -frx maybeDisableSetLongOption
-maybeDisableSetShortOption() { checkSetShortOption "$1" 'off' || applySetShortOption "$1" '+'; }
+
+maybeDisableSetShortOption() {
+    checkSetShortOption "$1" 'off' ||
+        applySetShortOption "$1" '+'
+}
 declare -frx maybeDisableSetShortOption
-maybeDisableShoptOption() { checkShoptOption "$1" 'off' || applyShoptOption "$1" '-u'; }
+
+maybeDisableShoptOption() {
+    checkShoptOption "$1" 'off' ||
+        applyShoptOption "$1" '-u'
+}
 declare -frx maybeDisableShoptOption
-maybeEnableSetLongOption() { checkSetLongOption "$1" 'on' || applySetLongOption "$1" '-o'; }
+
+maybeEnableSetLongOption() {
+    checkSetLongOption "$1" 'on' ||
+        applySetLongOption "$1" '-o'
+}
 declare -frx maybeEnableSetLongOption
-maybeEnableSetShortOption() { checkSetShortOption "$1" 'on' || applySetShortOption "$1" '-'; }
+
+maybeEnableSetShortOption() {
+    checkSetShortOption "$1" 'on' ||
+        applySetShortOption "$1" '-'
+}
 declare -frx maybeEnableSetShortOption
-maybeEnableShoptOption() { checkShoptOption "$1" 'on' || applyShoptOption "$1" '-s'; }
+
+maybeEnableShoptOption() {
+    checkShoptOption "$1" 'on' ||
+        applyShoptOption "$1" '-s'
+}
 declare -frx maybeEnableShoptOption
 
 parentOf() {
@@ -506,8 +551,12 @@ parentOf() {
 }
 declare -frx parentOf
 
-reportSetLongOption() { set -o | grep --fixed-strings "$1"; }
+reportSetLongOption() {
+    set -o |
+        grep --fixed-strings "$1"
+}
 declare -frx reportSetLongOption
+
 reportSetShortOption() {
     case $- in
     *"$1"*)
@@ -519,7 +568,11 @@ reportSetShortOption() {
     esac
 }
 declare -frx reportSetShortOption
-reportShoptOption() { shopt | grep --fixed-strings "$1"; }
+
+reportShoptOption() {
+    shopt |
+        grep --fixed-strings "$1"
+}
 declare -frx reportShoptOption
 
 requireScript() {
@@ -623,8 +676,8 @@ requireToBeSourced() {
 }
 declare -frx requireToBeSourced
 
-sourceScript() {
-    # Bash 'source' script $1
+sourceRequiredScript() {
+    # Bash 'source' required script $1
     # $1 = script pathname
     if (($# < 1)); then
         >&2 echo "ERROR: '${FUNCNAME[0]}' requires at least 1 argument instead of $#"
@@ -636,7 +689,7 @@ sourceScript() {
     >&2 echo "TRACE: Sourcing script '${_Script}'"
     source "${_Script}" "$@"
 }
-declare -frx sourceScript
+declare -frx sourceRequiredScript
 
 # Invoke some essential functions, before returning to caller, so they do not have to do so
 configureShellForScripting
