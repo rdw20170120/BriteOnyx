@@ -3,6 +3,8 @@
 # NO: set -ET
 set -euo pipefail
 
+>&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
+
 # TODO: consider whether this script could be executed instead
 
 # Install tagged source from a source-controlled project repository

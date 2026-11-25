@@ -2,6 +2,12 @@
 # shellcheck disable=SC1090,SC2034,SC2154
 # vim: set ft=bash:
 
+>&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
+
+# Show shell options during development/testing
+set -o
+shopt
+
 # For now, hard-code shell option assignments
 # TODO: consider how to uniquely assign each shell option
 # to disable/enable

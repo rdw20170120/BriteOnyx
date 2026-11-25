@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
 
+>&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
+
+# Show shell options during development/testing
+set -o
+shopt
+
 configureShellForScripting
 
 _main() {
-    >&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
     return 0
 }
 

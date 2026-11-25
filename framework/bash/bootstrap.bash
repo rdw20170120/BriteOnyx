@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
 
+>&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
+
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 ###################################################################################################
@@ -11,7 +13,7 @@ importFromFramework() {
     >&2 echo "TODO: Implement ${FUNCNAME[0]}"
     return 0
 }
-declare -frx importFromFramework
+declare -f importFromFramework
 
 library() {
     # Return absolute path of named ($1) library script,
@@ -43,4 +45,4 @@ library() {
     _Result="ERROR: Could not find a library for '${_Name}'"
     require "${_Result}"
 }
-declare -frx library
+declare -f library

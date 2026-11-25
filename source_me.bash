@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
 
+>&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
+
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
