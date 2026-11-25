@@ -107,7 +107,8 @@ assembleManpath() {
     fi
 
     [[ -n "${boManpathInherited:-}" ]] || boManpathInherited=${MANPATH:-}
-    [[ -n "${boManpathInherited:-}" ]] && declare -gx boManpathInherited=${boManpathInherited}
+    # [[ -n "${boManpathInherited:-}" ]] && declare -gx boManpathInherited=${boManpathInherited}
+    [[ -n "${boManpathInherited:-}" ]] && declare -gx boManpathInherited
 
     boManpath=
     [[ -n "${boProjectManpath:-}" ]] && boManpath+=${boProjectManpath:-}:
@@ -116,7 +117,8 @@ assembleManpath() {
     [[ -n "${boManpath:-}" ]] && declare -gx boManpath=${boManpath}
 
     [[ -n "${boManpath:-}" ]] && MANPATH=${boManpath:-}
-    [[ -n "${MANPATH:-}" ]] && declare -gx MANPATH=${MANPATH}
+    # [[ -n "${MANPATH:-}" ]] && declare -gx MANPATH=${MANPATH}
+    [[ -n "${MANPATH:-}" ]] && declare -gx MANPATH
 
     return 0
 }
@@ -132,7 +134,8 @@ assemblePath() {
 
     [[ -n "${boPathInherited:-}" ]] || boPathInherited=${PATH:-}
     [[ -n "${boPathInherited:-}" ]] && {
-        declare -gx boPathInherited=${boPathInherited}
+        # declare -gx boPathInherited=${boPathInherited}
+        declare -gx boPathInherited
         >&2 echo "DEBUG: boPathInherited='${boPathInherited}'"
     }
 
@@ -141,13 +144,15 @@ assemblePath() {
     [[ -n "${boAccountPath:-}" ]] && boPath+=${boAccountPath:-}:
     [[ -n "${boSystemPath:-}" ]] && boPath+=${boSystemPath:-}
     [[ -n "${boPath:-}" ]] && {
-        declare -gx boPath=${boPath}
+        # declare -gx boPath=${boPath}
+        declare -gx boPath
         >&2 echo "DEBUG: boPath='${boPath}'"
     }
 
     [[ -n "${boPath:-}" ]] && PATH=${boPath:-}
     [[ -n "${PATH:-}" ]] && {
-        declare -gx PATH=${PATH}
+        # declare -gx PATH=${PATH}
+        declare -gx PATH
         >&2 echo "DEBUG: PATH='${PATH}'"
     }
 
@@ -661,7 +666,7 @@ requireToBeSourced() {
     local _Script=$2
 
     if [[ "${_Executable}" != bash ]]; then
-        >&2 echo "DEBUG: executable '$0' is NOT 'bash' in '${_Script}'"
+        >&2 echo "DEBUG: Executable '$0' is NOT 'bash' in '${_Script}'"
     fi
     if [[ -z "${_Script}" ]]; then
         >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"

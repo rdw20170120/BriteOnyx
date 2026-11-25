@@ -23,7 +23,10 @@ boFramework=${boProjectHome}/framework
 ###################################################################################################
 # Configure BriteOnyx framework
 requireBriteOnyx
+sourceRequiredScript "${XDG_CONFIG_HOME}"/bash/ALL.bash
+sourceRequiredScript "${boProjectHome}"/ALL.bash
 sourceRequiredScript "${boFramework}"/bash/from_project_profile.bash
+configureShellForInteracting
 
 ###################################################################################################
 # Execute project scripts when testing BriteOnyx
@@ -44,5 +47,3 @@ if [[ -v boIsTesting ]]; then
     project-test
     exit 0
 fi
-
-configureShellForInteracting

@@ -4,6 +4,7 @@
 configureShellForScripting
 
 _main() {
+    >&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
     return 0
 }
 

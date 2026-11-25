@@ -37,7 +37,7 @@ if [[ ! -v boHomeInstaller ]]; then
         : "${boHomeInstaller:=${HOME}/.cache/boInstaller}"
     fi
 fi
->&2 echo "DEBUG: using boHomeInstaller = '${boHomeInstaller}'"
+>&2 echo "DEBUG: Using boHomeInstaller = '${boHomeInstaller}'"
 # TODO: declare -rx boHomeInstaller
 
 ###################################################################################################
@@ -108,7 +108,7 @@ _install() {
 
 _main() {
     if [[ $# -ne 3 ]]; then
-        >&2 echo 'ERROR: requires name, tag, and URL arguments'
+        >&2 echo 'ERROR: Requires name, tag, and URL arguments'
         return 1
     fi
     local -r _Name=$1

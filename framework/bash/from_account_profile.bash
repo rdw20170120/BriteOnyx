@@ -5,10 +5,13 @@
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 
-declare -grx boAccount=${HOME}
+# TODO: logExecuting "${BASH_SOURCE[0]}"
+# TODO: logActivity 'Activating this account for this Bash session'
 
 # shellcheck disable=SC2154
 sourceRequiredScript "${boFramework}"/bash/entry_point.bash
 
 ###################################################################################################
-# TODO: logDone "BriteOnyx framework successfully activated in ${boFramework}"
+# shellcheck disable=SC2154,SC2164
+cd "${boAccountHome}"
+# TODO: logDone "BriteOnyx framework successfully activated in ${boAccountHome}"

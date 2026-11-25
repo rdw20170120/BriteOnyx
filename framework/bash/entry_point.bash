@@ -4,13 +4,12 @@
 
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
+configureShellForScripting
 
 ###################################################################################################
 # Bootstrap BriteOnyx framework
 # shellcheck disable=SC2154
 sourceRequiredScript "${boFramework}"/bash/bootstrap.bash
-
-assembleAll
 
 # Establish reference to library of Bash functions
 # shellcheck disable=SC2154
@@ -22,4 +21,7 @@ declare -grx boFrameworkLib
 ###################################################################################################
 # Export and freeze reference to BriteOnyx framework
 declare -grx boFramework
+
+###################################################################################################
+assembleAll
 # TODO: logDone "BriteOnyx framework successfully activated in ${boFramework}"

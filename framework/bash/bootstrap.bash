@@ -5,10 +5,10 @@ requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 ###################################################################################################
 
->&2 echo "TODO: implement bootstrap"
+>&2 echo "TODO: Implement bootstrap"
 
 importFromFramework() {
-    >&2 echo "TODO: implement ${FUNCNAME[0]}"
+    >&2 echo "TODO: Implement ${FUNCNAME[0]}"
     return 0
 }
 declare -frx importFromFramework
@@ -30,7 +30,7 @@ library() {
         require "${_Result}"
         return 0
     else
-        >&2 echo "DEBUG: did not find library '${_Result}'"
+        >&2 echo "DEBUG: Did not find library '${_Result}'"
     fi
     _Result=${boFrameworkLib}/${_Name}
     if [[ -d "${_Result}" ]]; then
@@ -38,9 +38,9 @@ library() {
         require "${_Result}"
         return 0
     else
-        >&2 echo "DEBUG: did not find library '${_Result}'"
+        >&2 echo "DEBUG: Did not find library '${_Result}'"
     fi
-    _Result="ERROR: could not find a library for '${_Name}'"
+    _Result="ERROR: Could not find a library for '${_Name}'"
     require "${_Result}"
 }
 declare -frx library
