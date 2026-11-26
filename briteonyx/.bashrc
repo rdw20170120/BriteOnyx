@@ -14,7 +14,7 @@ else
     >&2 echo "ERROR: Missing script '${_Script}'"
     return 1
 fi
-requireToBeSourced "$0" "${BASH_SOURCE[0]}"
+sourced "$0" "${BASH_SOURCE[0]}"
 
 ###################################################################################################
 # Establish project home directory
@@ -23,7 +23,7 @@ boProjectHome=$(parentOf "$(parentOf "${BASH_SOURCE[0]}")")
 ###################################################################################################
 # Since this is BriteOnyx's project repository, use it as the framework for live development
 boFramework=${boProjectHome}/framework
->&2 echo "INFO: boFramework=${boFramework}"
+logDebug "boFramework=${boFramework}"
 
 ###################################################################################################
 # Configure BriteOnyx framework
@@ -35,7 +35,7 @@ configureShellForInteracting
 ###################################################################################################
 # Execute project scripts when testing BriteOnyx
 if [[ -v boIsTesting ]]; then
-    >&2 echo "INFO: boIsTesting is defined, executing project scripts"
+    logInfo "boIsTesting is defined, executing project scripts"
     pwd
     project-clean
     project-commit

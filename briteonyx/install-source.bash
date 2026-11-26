@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # vim: set ft=bash:
-# NO: set -ET
 set -euo pipefail
 
->&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
+>&2 echo "TRACE: Running ${BASH_SOURCE[0]}"
 
 # TODO: consider whether this script could be executed instead
 
@@ -34,13 +33,13 @@ fi
 # Configure
 if [[ ! -v boHomeInstaller ]]; then
     if [[ -v XDG_CACHE_HOME ]]; then
-        : "${boHomeInstaller:=${XDG_CACHE_HOME}/boInstaller}"
+        boHomeInstaller=${XDG_CACHE_HOME}/boInstaller
     else
-        : "${boHomeInstaller:=${HOME}/.cache/boInstaller}"
+        boHomeInstaller=${HOME}/.cache/boInstaller
     fi
 fi
 >&2 echo "DEBUG: Using boHomeInstaller = '${boHomeInstaller}'"
-# TODO: declare -rx boHomeInstaller
+# declare -rx boHomeInstaller
 
 ###################################################################################################
 
@@ -120,9 +119,9 @@ _main() {
     local -r _Home=${boHomeInstaller}/${_Name}/${_Tag}
 
     if [[ -d ${_Home} ]]; then
-        >&2 echo "INFO: ${_Name} ${_Tag} already installed in directory '${_Home}'"
+        >&2 echo "INFO:  ${_Name} ${_Tag} already installed in directory '${_Home}'"
     else
-        >&2 echo "INFO: Installing ${_Name} ${_Tag} into new directory '${_Home}'"
+        >&2 echo "INFO:  Installing ${_Name} ${_Tag} into new directory '${_Home}'"
         _install "${_Home}" "${_Tag}" "${_Url}"
     fi
 

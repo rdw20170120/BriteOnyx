@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC1090,SC2034,SC2154
+# shellcheck disable=SC1090,SC2004,SC2034,SC2154
 # vim: set ft=bash:
 
->&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
-
-# Show shell options during development/testing
-set -o
-shopt
+>&2 echo "TRACE: Running ${BASH_SOURCE[0]}"
 
 # For now, hard-code shell option assignments
 # TODO: consider how to uniquely assign each shell option
@@ -21,12 +17,12 @@ shopt
 ###################################################################################################
 # MUST be properly 'source'd, NOT executed
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '$0'"
+    >&2 echo "ERROR: BASH_SOURCE[0] is empty in script '$0'"
     return 1
 fi
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-    >&2 echo "ERROR: Aborting, script '$0' MUST be sourced instead of executed"
-    return 1
+    >&2 echo "FATAL: Aborting, script '$0' MUST be sourced instead of executed"
+    exit 1
 fi
 
 ###################################################################################################
@@ -47,14 +43,34 @@ fi
 
 ###################################################################################################
 
+abortOnFail() {
+    # Abort execution on failure of previous command
+    # $1 = exit status of previous command (from $?)
+    # $2 = message to print on fail (optional)
+    if (($# < 1)) || ((2 < $#)); then
+        logError "'${FUNCNAME[0]}' requires 1-2 argument(s) instead of $#"
+        # NOTE: This is one of the VERY few exceptions for calling 'exit' directly from a function
+        exit 1
+    fi
+    local -ir Status=$1
+    if ((${Status} != 0)); then
+        if [[ -z "$2" ]]; then
+            logBad "Aborting with status ${Status}: Last command failed"
+        else
+            logBad "Aborting with status ${Status}: $2"
+        fi
+        # NOTE: This is one of the VERY few exceptions for calling 'exit' directly from a function
+        exit ${Status}
+    fi
+
+    return 0
+}
+declare -frx abortOnFail
+
 absolute() {
     # Return absolute pathname of file system entry $1
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 1
     local _Pathname=$1
 
     if [[ -d "${_Pathname}" ]]; then
@@ -62,8 +78,7 @@ absolute() {
         if cd -- "${_Result}"; then
             _Result=$(pwd -P)
         else
-            >&2 echo "ERROR: Could not 'cd' to '${_Result}'"
-            exit 1
+            fail 1 "Could not 'cd' to '${_Result}'"
         fi
     else
         _Result=${_Pathname}
@@ -72,8 +87,7 @@ absolute() {
             _Result=$(pwd -P)
             _Result=${_Result}/$(basename -- "${_Pathname}")
         else
-            >&2 echo "ERROR: Could not 'cd' to '${_Result}'"
-            exit 1
+            fail 1 "Could not 'cd' to '${_Result}'"
         fi
     fi
 
@@ -91,10 +105,7 @@ declare -frx applyShoptOption
 # shellcheck disable=SC2120
 assembleAll() {
     # Assemble all paths and related environment variables
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     assembleXdg
     assembleManpath
@@ -107,10 +118,7 @@ declare -frx assembleAll
 # shellcheck disable=SC2120
 assembleManpath() {
     # Assemble MANPATH environment variable
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     [[ -n "${boManpathInherited:-}" ]] || boManpathInherited=${MANPATH:-}
     # [[ -n "${boManpathInherited:-}" ]] && declare -gx boManpathInherited=${boManpathInherited}
@@ -133,16 +141,13 @@ declare -frx assembleManpath
 # shellcheck disable=SC2120
 assemblePath() {
     # Assemble executable PATH environment variable
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     [[ -n "${boPathInherited:-}" ]] || boPathInherited=${PATH:-}
     [[ -n "${boPathInherited:-}" ]] && {
         # declare -gx boPathInherited=${boPathInherited}
         declare -gx boPathInherited
-        >&2 echo "DEBUG: boPathInherited='${boPathInherited}'"
+        logDebug "boPathInherited='${boPathInherited}'"
     }
 
     boPath=
@@ -152,14 +157,14 @@ assemblePath() {
     [[ -n "${boPath:-}" ]] && {
         # declare -gx boPath=${boPath}
         declare -gx boPath
-        >&2 echo "DEBUG: boPath='${boPath}'"
+        logDebug "boPath='${boPath}'"
     }
 
     [[ -n "${boPath:-}" ]] && PATH=${boPath:-}
     [[ -n "${PATH:-}" ]] && {
         # declare -gx PATH=${PATH}
         declare -gx PATH
-        >&2 echo "DEBUG: PATH='${PATH}'"
+        logDebug "PATH='${PATH}'"
     }
 
     return 0
@@ -169,10 +174,7 @@ declare -frx assemblePath
 # shellcheck disable=SC2120
 assembleXdg() {
     # Assemble XDG environment variables
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     # Apply XDG standard defaults to make them explicit
     # REF: https://specifications.freedesktop.org/basedir/latest/
@@ -247,17 +249,28 @@ declare -frx assembleXdg
 baseOf() {
     # Return base of pathname $1
     # $1 = pathname of a file system entry
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 1
     local _Result=$1
+
     _Result=$(basename -- "${_Result}")
 
     echo "${_Result}"
 }
 declare -frx baseOf
+
+called() {
+    # Acknowledge that function $1 was called with remaining arguments
+    # $1 = function name from FUNCNAME[0]
+    requireArguments "${FUNCNAME[0]}" $# 1 0
+
+    if [[ -v boIsDebugging ]]; then
+        local -r _Function=$1
+        shift 1
+        local -r _Count=$#
+        logTrace "Called '${_Function}' with (${_Count}): '$*'"
+    fi
+}
+declare -frx called
 
 checkSetLongOption() {
     reportSetLongOption "$1" |
@@ -282,11 +295,7 @@ declare -frx checkShoptOption
 
 configureShellForInteracting() {
     # Configure Bash shell options for interacting
-    # No arguments
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     maybeDisableSetLongOption allexport
     maybeDisableSetLongOption emacs
@@ -371,11 +380,7 @@ declare -frx configureShellForInteracting
 # shellcheck disable=SC2120
 configureShellForScripting() {
     # Configure Bash shell options for scripting
-    # No arguments
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     # NOTE: these are crucial to BriteOnyx design
     maybeEnableSetLongOption errexit
@@ -474,11 +479,7 @@ declare -frx configureShellForScripting
 dirOf() {
     # Return directory of pathname $1, self if it is a directory
     # $1 = pathname of a file system entry
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 1
     local _Result=$1
 
     if [[ ! -d "${_Result}" ]]; then
@@ -490,13 +491,16 @@ dirOf() {
 }
 declare -frx dirOf
 
+fail() {
+    # Fail, with error/exit code $1 and message $2
+    abortOnFail "$1" "$2"
+}
+declare -frx fail
+
 installBriteOnyx() {
     # Install BriteOnyx framework tagged $1
     # $1 = tag (version) to install
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 1
     local -r _Tag=$1
 
     sourceRequiredScript "${XDG_CONFIG_HOME}"/briteonyx/install-source.bash \
@@ -504,11 +508,41 @@ installBriteOnyx() {
         https://github.com/rdw20170120/BriteOnyx.git
     # shellcheck disable=SC2154
     declare -gx boFramework=${boInstalledInto}/framework
-    >&2 echo "INFO: boFramework=${boFramework}"
+    logDebug "boFramework=${boFramework}"
 
     requireBriteOnyx
 }
 declare -frx installBriteOnyx
+
+log() { >&2 printf '%s\n' "$1"; }
+declare -frx log
+
+logActivity() { logInfo "$1"; }
+declare -frx logActivity
+
+logBad() { logInfo "$1"; }
+declare -frx logBad
+
+logDebug() { log "DEBUG: $1"; }
+declare -frx logDebug
+
+logDone() { logInfo "$1"; }
+declare -frx logDebug
+
+logError() { log "ERROR: $1"; }
+declare -frx logError
+
+logFatal() { log "FATAL: $1"; }
+declare -frx logFatal
+
+logInfo() { log "INFO:  $1"; }
+declare -frx logInfo
+
+logTrace() { log "TRACE: $1"; }
+declare -frx logTrace
+
+logWarn() { log "WARN:  $1"; }
+declare -frx logWarn
 
 maybeDisableSetLongOption() {
     checkSetLongOption "$1" 'off' ||
@@ -549,12 +583,9 @@ declare -frx maybeEnableShoptOption
 parentOf() {
     # Return parent directory of pathname $1
     # $1 = pathname of a file system entry
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 1
     local _Result=$1
+
     _Result=$(dirname -- "${_Result}")
     _Result=$(absolute "${_Result}")
 
@@ -586,26 +617,54 @@ reportShoptOption() {
 }
 declare -frx reportShoptOption
 
+requireArguments() {
+    # Require that function $1 received expected number of arguments
+    # $1 = function name (from FUNCNAME[0])
+    # $2 = actual number of arguments received by caller (from $#)
+    # $3 = expected minimum number of arguments
+    # $4 = expected maximum number of arguments (optional)
+    if (($# < 3)) || ((4 < $#)); then
+        fail 1 "'${FUNCNAME[0]}' requires 3-4 arguments instead of $#"
+    fi
+    local -r _Function=$1
+    local -ir _Actual=$2
+    local -ir _Minimum=$3
+    if (($# == 4)); then
+        local -ir _Maximum=$4
+    else
+        local -ir _Maximum=$3
+    fi
+
+    if ((${_Maximum} == 0)); then
+        # A maximum of '0' arguments means unlimited
+        if ((${_Actual} < ${_Minimum})); then
+            fail 1 "'${_Function}' requires at least ${_Minimum} argument(s) instead of ${_Actual}"
+        fi
+    else
+        if ((${_Actual} < ${_Minimum})) || ((${_Maximum} < ${_Actual})); then
+            fail 1 "'${_Function}' requires ${_Minimum}-${_Maximum} argument(s) instead of ${_Actual}"
+        fi
+    fi
+    return 0
+}
+declare -frx requireArguments
+
 # shellcheck disable=SC2120
 requireBriteOnyx() {
     # Require BriteOnyx framework
-    # No arguments
-    if (($# != 0)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 0 arguments instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 0
 
     if [[ -v boNO ]]; then
-        >&2 echo "ERROR: Found 'boNO' defined, BriteOnyx is explicitly disabled"
+        logError "Found 'boNO' defined, BriteOnyx is explicitly disabled"
         return 1
     fi
     if [[ -v boFramework ]]; then
         if [[ ! -d "${boFramework}" ]]; then
-            >&2 echo "ERROR: 'boFramework' does NOT reference a directory, need BriteOnyx"
+            logError "'boFramework' does NOT reference a directory, need BriteOnyx"
             return 1
         fi
     else
-        >&2 echo "ERROR: Missing 'boFramework', need BriteOnyx"
+        logError "Missing 'boFramework', need BriteOnyx"
         return 1
     fi
 
@@ -617,92 +676,105 @@ requireScript() {
     # Require script $1, expecting it to be invoked via Bash 'source' command
     # Return absolute pathname of script
     # $1 = pathname of script about to be invoked via "source"
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 1
     local _Result=$1
+
     _Result=$(absolute "${_Result}")
 
     if [[ -f "${_Result}" ]]; then
-        >&2 echo "DEBUG: Required script '${_Result}'"
+        logDebug "Required script '${_Result}'"
     else
-        >&2 echo "ERROR: Missing readable script '${_Result}'"
-        exit 1
+        fail 1 "Missing readable script '${_Result}'"
     fi
     printf '%s' "${_Result}"
 }
 declare -frx requireScript
 
-requireToBeExecuted() {
+_requireToBeExecuted() {
     # Require the calling script to be executed, NOT 'source'd
     # $1 = name of executable (e.g., from "$0")
     # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
-    if (($# != 2)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 2 arguments instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 2
     local _Executable=$1
     local _Script=$2
 
     if [[ -z "${_Script}" ]]; then
-        >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
+        logError "Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
         return 1
     fi
     if [[ "${_Script}" != "${_Executable}" ]]; then
-        >&2 echo "ERROR: Aborting, cannot source, MUST execute script '${_Executable}'"
-        exit 1
+        fail 1 "Aborting, cannot source, MUST execute script '${_Executable}'"
     fi
 
     return 0
 }
-declare -frx requireToBeExecuted
+declare -frx _requireToBeExecuted
 
-requireToBeSourced() {
+_requireToBeSourced() {
     # Require the calling script to be 'source'd, NOT executed
     # $1 = name of executable (e.g., from "$0")
     # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
-    if (($# != 2)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 2 arguments instead of $#"
-        exit 1
-    fi
-
+    requireArguments "${FUNCNAME[0]}" $# 2
     local _Executable=$1
     local _Script=$2
 
     if [[ "${_Executable}" != bash ]]; then
-        >&2 echo "DEBUG: Executable '$0' is NOT 'bash' in '${_Script}'"
+        logDebug "Executable '$0' is NOT 'bash' in '${_Script}'"
     fi
     if [[ -z "${_Script}" ]]; then
-        >&2 echo "ERROR: Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
+        logError "Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
         return 1
     fi
     if [[ "${_Script}" == "${_Executable}" ]]; then
-        >&2 echo "ERROR: Aborting, cannot execute, MUST source script '${_Executable}'"
+        logError "Aborting, cannot execute, MUST source script '${_Executable}'"
         return 1
     fi
 
     return 0
 }
-declare -frx requireToBeSourced
+declare -frx _requireToBeSourced
+
+executed() {
+    # Acknowledge that script was executed, verified from arguments
+    # $1 = caller's $0
+    # $2 = caller's ${BASH_SOURCE[0]}
+    requireArguments "${FUNCNAME[0]}" $# 2
+
+    _requireToBeExecuted "$1" "$2"
+    logTrace "Executed '$2'"
+    configureShellForScripting
+
+    return 0
+}
+declare -frx executed
+
+sourced() {
+    # Acknowledge that script was sourced, verified from arguments
+    # $1 = caller's $0
+    # $2 = caller's ${BASH_SOURCE[0]}
+    requireArguments "${FUNCNAME[0]}" $# 2
+
+    _requireToBeSourced "$1" "$2"
+    logTrace "Sourced '$2'"
+    configureShellForScripting
+
+    return 0
+}
+declare -frx sourced
 
 sourceRequiredScript() {
     # Bash 'source' required script $1
     # $1 = script pathname
-    if (($# < 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires at least 1 argument instead of $#"
-        exit 1
-    fi
+    requireArguments "${FUNCNAME[0]}" $# 1 0
     local _Script=$1
+
     shift 1
     _Script=$(requireScript "${_Script}")
-    >&2 echo "TRACE: Sourcing script '${_Script}'"
+    logTrace "Sourcing script '${_Script}'"
     source "${_Script}" "$@"
 }
 declare -frx sourceRequiredScript
 
 # Invoke some essential functions, before returning to caller, so they do not have to do so
-configureShellForScripting
+sourced "$0" "${BASH_SOURCE[0]}"
 assembleAll
