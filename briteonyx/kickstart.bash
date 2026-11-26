@@ -586,28 +586,6 @@ reportShoptOption() {
 }
 declare -frx reportShoptOption
 
-requireScript() {
-    # Require script $1, expecting it to be invoked via Bash 'source' command
-    # Return absolute pathname of script
-    # $1 = pathname of script about to be invoked via "source"
-    if (($# != 1)); then
-        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
-        exit 1
-    fi
-
-    local _Result=$1
-    _Result=$(absolute "${_Result}")
-
-    if [[ -r "${_Result}" ]]; then
-        >&2 echo "DEBUG: Required script '${_Result}'"
-    else
-        >&2 echo "ERROR: Missing readable script '${_Result}'"
-        exit 1
-    fi
-    printf '%s' "${_Result}"
-}
-declare -frx requireScript
-
 # shellcheck disable=SC2120
 requireBriteOnyx() {
     # Require BriteOnyx framework
@@ -634,6 +612,28 @@ requireBriteOnyx() {
     return 0
 }
 declare -frx requireBriteOnyx
+
+requireScript() {
+    # Require script $1, expecting it to be invoked via Bash 'source' command
+    # Return absolute pathname of script
+    # $1 = pathname of script about to be invoked via "source"
+    if (($# != 1)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
+        exit 1
+    fi
+
+    local _Result=$1
+    _Result=$(absolute "${_Result}")
+
+    if [[ -f "${_Result}" ]]; then
+        >&2 echo "DEBUG: Required script '${_Result}'"
+    else
+        >&2 echo "ERROR: Missing readable script '${_Result}'"
+        exit 1
+    fi
+    printf '%s' "${_Result}"
+}
+declare -frx requireScript
 
 requireToBeExecuted() {
     # Require the calling script to be executed, NOT 'source'd

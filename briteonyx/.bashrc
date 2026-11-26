@@ -17,8 +17,11 @@ fi
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
 
 ###################################################################################################
-# Since this is BriteOnyx's project repository, use it as the framework
+# Establish project home directory
 boProjectHome=$(parentOf "$(parentOf "${BASH_SOURCE[0]}")")
+
+###################################################################################################
+# Since this is BriteOnyx's project repository, use it as the framework for live development
 boFramework=${boProjectHome}/framework
 >&2 echo "INFO: boFramework=${boFramework}"
 

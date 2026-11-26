@@ -41,12 +41,12 @@ Follow my Conventional Commits (TODO: document and reference)
 1. [ ] P chore(bash): ensure consistent use of `executing`
 1. [ ] P chore(bash): ensure consistent use of `logArgument`
 1. [ ] P chore(bash): ensure consistent use of `parentOf`
-1. [ ] P chore(bash): ensure consistent use of `remember`
 1. [ ] P chore(bash): ensure consistent use of `requireArguments`
-1. [ ] P chore(bash): ensure consistent use of `require` with `source`
 1. [ ] P chore(bash): prefer `declare` over `typeset`, outside of functions
 1. [ ] P chore(bash): prefer `local` inside functions
 1. [ ] P chore(bash): prefer `printf` over `echo`
+1. [x] chore(bash): ensure consistent use of `require` with `source`
 1. [x] chore(bash): remove extraneous use of `builtin`
 1. [x] chore(bash): remove extraneous use of `command`
 1. [x] feat(bash): implement `boNO` to disable BriteOnyx
+1. [x] ~~chore(bash): ensure consistent use of `remember`~~

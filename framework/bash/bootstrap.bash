@@ -2,47 +2,57 @@
 # vim: set ft=bash:
 
 >&2 echo "TRACE: Executing ${BASH_SOURCE[0]}"
-
 requireToBeSourced "$0" "${BASH_SOURCE[0]}"
+configureShellForScripting
+requireBriteOnyx
+
+###################################################################################################
+# Establish reference to framework library of Bash functions
+# shellcheck disable=SC2154
+boFrameworkLib=${boFramework}/bash/lib
+declare -grx boFrameworkLib
 
 ###################################################################################################
 
->&2 echo "TODO: Implement bootstrap"
+_checkForLibrary() {
+    # Maybe import the Bash library functions associated with name $2 in directory $1
+    # $1 = directory that might contain library script
+    # $2 = name that might be associated with library script
+    if (($# != 2)); then
+        >&2 echo "ERROR: '${FUNCNAME[0]}' requires 2 arguments instead of $#"
+        exit 1
+    fi
+    local _Dir=$1
+    local _Name=$2
 
-importFromFramework() {
-    >&2 echo "TODO: Implement ${FUNCNAME[0]}"
+    >&2 echo "DEBUG: Checking for Bash library at '${_Dir}/${_Name}'"
+    [[ -d "${_Dir}" ]] || return 1
+    [[ -f "${_Dir}/${_Name}" ]] || return 1
+
+    # Set calling function's local variable as result
+    _Script=${_Dir}/${_Name}
     return 0
 }
-declare -f importFromFramework
+declare -frx _checkForLibrary
 
-library() {
-    # Return absolute path of named ($1) library script,
-    # OR abort with an error
+import() {
+    # Import the Bash library functions associated with name $1
     # $1 = (partial) name of library script
+    # TODO: Add support for account-specific and project-specific libraries
     if (($# != 1)); then
         >&2 echo "ERROR: '${FUNCNAME[0]}' requires 1 argument instead of $#"
         exit 1
     fi
-
     local _Name=$1
 
-    # shellcheck disable=SC2154
-    _Result=${boFrameworkLib}/${_Name}.bash
-    if [[ -r "${_Result}" ]]; then
-        require "${_Result}"
-        return 0
-    else
-        >&2 echo "DEBUG: Did not find library '${_Result}'"
-    fi
-    _Result=${boFrameworkLib}/${_Name}
-    if [[ -d "${_Result}" ]]; then
-        _Result=${boFrameworkLib}/${_Name}/ALL.bash
-        require "${_Result}"
-        return 0
-    else
-        >&2 echo "DEBUG: Did not find library '${_Result}'"
-    fi
-    _Result="ERROR: Could not find a library for '${_Name}'"
-    require "${_Result}"
+    local _Script=
+    _checkForLibrary "${boFrameworkLib}" "${_Name}" ||
+        _checkForLibrary "${boFrameworkLib}" "${_Name}".bash ||
+        _checkForLibrary "${boFrameworkLib}/${_Name}" "ALL.bash" ||
+        {
+            >&2 echo "ERROR: Could not find a framework library for '${_Name}'"
+            return 1
+        }
+    sourceRequiredScript "${_Script}"
 }
-declare -f library
+declare -frx import

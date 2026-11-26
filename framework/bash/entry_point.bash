@@ -17,12 +17,7 @@ requireBriteOnyx
 # shellcheck disable=SC2154
 sourceRequiredScript "${boFramework}"/bash/bootstrap.bash
 
-# Establish reference to library of Bash functions
-# shellcheck disable=SC2154
-boFrameworkLib=${boFramework}/bash/lib
-declare -grx boFrameworkLib
-
-# TODO: importFromFramework core
+import core
 
 ###################################################################################################
 # Export and freeze reference to BriteOnyx framework

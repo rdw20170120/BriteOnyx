@@ -23,7 +23,7 @@ fi
 ###################################################################################################
 # Launch a new interactive Bash shell, configured by the project's profile script
 _Script=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/briteonyx/.bashrc
-if [[ -r "${_Script}" ]]; then
+if [[ -f "${_Script}" ]]; then
     # Order of Bash options matters (long first, short last)
     # shellcheck disable=SC2037
     _Cmd="bash --noprofile --rcfile ${_Script} -i"
