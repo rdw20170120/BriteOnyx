@@ -5,7 +5,6 @@
 sourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 
-# TODO: Replace with upgraded implementation
 # NO: _requireToBeExecuted
 # NO: _requireToBeSourced
 # NO: abortOnFail
@@ -46,8 +45,6 @@ requireBriteOnyx
 # TODO: reportSetLongOption
 # TODO: reportSetShortOption
 # TODO: reportShoptOption
-# TODO: requireCommand
-# TODO: requireScript
 # TODO: requireValue
 # TODO: requireValueIn
 # TODO: requireVariable

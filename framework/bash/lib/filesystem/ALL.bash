@@ -5,7 +5,6 @@
 sourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 
-# TODO: Replace with upgraded implementation
 # TODO: changeDirectory
 # TODO: changeDirectoryIn
 # TODO: forbidPath
@@ -13,7 +12,10 @@ requireBriteOnyx
 # TODO: maybeCreateDirectoryTree
 # TODO: maybeDeleteDirectoryTree
 # TODO: maybeDeleteFile
+# TODO: requireCommand
 # TODO: requireDirectory
 # TODO: requireDirectoryIn
 # TODO: requireFile
 # TODO: requireFileIn
+# TODO: requireScript
+# TODO: requireUmask

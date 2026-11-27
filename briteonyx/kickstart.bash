@@ -744,6 +744,18 @@ requireBriteOnyx() {
 }
 declare -frx requireBriteOnyx
 
+requireDirectory() {
+    # Require directory $1
+    # $1 = pathname that is required to be a directory
+    requireArguments "${FUNCNAME[0]}" $# 1
+    local _Pathname=$1
+
+    _Pathname=$(absolute "${_Pathname}")
+    requireExists "${_Pathname}"
+    [[ -d "${_Pathname}" ]] || abortOnFail 1 "Missing directory '${_Pathname}'"
+}
+declare -frx requireDirectory
+
 requireExists() {
     # Require pathname $1
     # $1 = pathname that is required to exist

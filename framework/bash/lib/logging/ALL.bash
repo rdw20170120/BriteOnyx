@@ -5,5 +5,4 @@
 sourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 
-# TODO: Replace with upgraded implementation
 # TODO: _log
