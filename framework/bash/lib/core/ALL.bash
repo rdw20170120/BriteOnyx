@@ -5,51 +5,49 @@
 sourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
 
+# TODO: Replace with upgraded implementation
+# NO: _requireToBeExecuted
+# NO: _requireToBeSourced
 # NO: abortOnFail
+# NO: absolute
+# NO: assembleAll
+# NO: assembleManpath
+# NO: assemblePath
+# NO: assembleXdg
+# NO: baseOf
+# NO: called
+# NO: dirOf
+# NO: execute
+# NO: executed
 # NO: fail
-# _checkForLibrary
-# _requireToBeExecuted
-# _requireToBeSourced
-# absolute
-# applySetLongOption
-# applySetShortOption
-# applyShoptOption
-# assembleAll
-# assembleManpath
-# assemblePath
-# assembleXdg
-# baseOf
-# called
-# checkSetLongOption
-# checkSetShortOption
-# checkShoptOption
-# configureShellForInteracting
-# configureShellForScripting
-# dirOf
-# executed
-# import
-# installBriteOnyx
-# log
-# logActivity
-# logBad
-# logDebug
-# logError
-# logFatal
-# logInfo
-# logTrace
-# logWarn
-# maybeDisableSetLongOption
-# maybeDisableSetShortOption
-# maybeDisableShoptOption
-# maybeEnableSetLongOption
-# maybeEnableSetShortOption
-# maybeEnableShoptOption
-# parentOf
-# reportSetLongOption
-# reportSetShortOption
-# reportShoptOption
+# NO: import
+# NO: installBriteOnyx
+# NO: parentOf
 # NO: requireArguments
-# requireBriteOnyx
-# requireScript
-# sourceRequiredScript
-# sourced
+# NO: requireBriteOnyx
+# NO: sourceRequiredScript
+# NO: sourced
+# TODO: _checkForLibrary
+# TODO: applySetLongOption
+# TODO: applySetShortOption
+# TODO: applyShoptOption
+# TODO: checkSetLongOption
+# TODO: checkSetShortOption
+# TODO: checkShoptOption
+# TODO: configureShellForInteracting
+# TODO: configureShellForScripting
+# TODO: forbidVariable
+# TODO: maybeDisableSetLongOption
+# TODO: maybeDisableSetShortOption
+# TODO: maybeDisableShoptOption
+# TODO: maybeEnableSetLongOption
+# TODO: maybeEnableSetShortOption
+# TODO: maybeEnableShoptOption
+# TODO: reportSetLongOption
+# TODO: reportSetShortOption
+# TODO: reportShoptOption
+# TODO: requireCommand
+# TODO: requireScript
+# TODO: requireValue
+# TODO: requireValueIn
+# TODO: requireVariable

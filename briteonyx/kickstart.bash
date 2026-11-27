@@ -43,24 +43,70 @@ fi
 
 ###################################################################################################
 
+_log() { >&2 printf '%s\n' "$1"; }
+declare -frx _log
+
+_requireToBeExecuted() {
+    # Require the calling script to be executed, NOT 'source'd
+    # $1 = name of executable (e.g., from "$0")
+    # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
+    requireArguments "${FUNCNAME[0]}" $# 2
+    local -r _Executable=$1
+    local -r _Script=$2
+
+    if [[ -z "${_Script}" ]]; then
+        fail 1 "Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
+    fi
+    if [[ "${_Script}" != "${_Executable}" ]]; then
+        fail 1 "Aborting, cannot source, MUST execute script '${_Executable}'"
+    fi
+
+    return 0
+}
+declare -frx _requireToBeExecuted
+
+_requireToBeSourced() {
+    # Require the calling script to be 'source'd, NOT executed
+    # $1 = name of executable (e.g., from "$0")
+    # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
+    requireArguments "${FUNCNAME[0]}" $# 2
+    local -r _Executable=$1
+    local -r _Script=$2
+
+    if [[ "${_Executable}" != bash ]]; then
+        logDebug "Executable '$0' is NOT 'bash' in '${_Script}'"
+    fi
+    if [[ -z "${_Script}" ]]; then
+        fail 1 "Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
+    fi
+    if [[ "${_Script}" == "${_Executable}" ]]; then
+        fail 1 "Aborting, cannot execute, MUST source script '${_Executable}'"
+    fi
+
+    return 0
+}
+declare -frx _requireToBeSourced
+
 abortOnFail() {
     # Abort execution on failure of previous command
     # $1 = exit status of previous command (from $?)
     # $2 = message to print on fail (optional)
     if (($# < 1)) || ((2 < $#)); then
         logError "'${FUNCNAME[0]}' requires 1-2 argument(s) instead of $#"
-        # NOTE: This is one of the VERY few exceptions for calling 'exit' directly from a function
+        # NOTE: This is one of the VERY few exceptions to calling 'exit' directly from a function
         exit 1
     fi
-    local -ir Status=$1
-    if ((${Status} != 0)); then
-        if [[ -z "$2" ]]; then
-            logBad "Aborting with status ${Status}: Last command failed"
+    local -ir _Status=$1
+    local -r _Message=$2
+
+    if ((${_Status} != 0)); then
+        if [[ -z "${_Message}" ]]; then
+            logFatal "Aborting with status ${_Status}: Last command failed"
         else
-            logBad "Aborting with status ${Status}: $2"
+            logFatal "Aborting with status ${_Status}: ${_Message}"
         fi
-        # NOTE: This is one of the VERY few exceptions for calling 'exit' directly from a function
-        exit ${Status}
+        # NOTE: This is one of the VERY few exceptions to calling 'exit' directly from a function
+        exit ${_Status}
     fi
 
     return 0
@@ -71,7 +117,7 @@ absolute() {
     # Return absolute pathname of file system entry $1
     # $1 = full pathname of executing script (e.g., from "${BASH_SOURCE[0]}")
     requireArguments "${FUNCNAME[0]}" $# 1
-    local _Pathname=$1
+    local -r _Pathname=$1
 
     if [[ -d "${_Pathname}" ]]; then
         _Result=${_Pathname}
@@ -261,7 +307,7 @@ declare -frx baseOf
 called() {
     # Acknowledge that function $1 was called with remaining arguments
     # $1 = function name from FUNCNAME[0]
-    requireArguments "${FUNCNAME[0]}" $# 1 0
+    requireArguments "${FUNCNAME[0]}" $# 1 -1
 
     if [[ -v boIsDebugging ]]; then
         local -r _Function=$1
@@ -382,7 +428,7 @@ configureShellForScripting() {
     # Configure Bash shell options for scripting
     requireArguments "${FUNCNAME[0]}" $# 0
 
-    # NOTE: these are crucial to BriteOnyx design
+    # NOTE: These are crucial to BriteOnyx design
     maybeEnableSetLongOption errexit
     maybeEnableSetLongOption nounset
     maybeEnableSetLongOption pipefail
@@ -485,14 +531,45 @@ dirOf() {
     if [[ ! -d "${_Result}" ]]; then
         _Result=$(dirname -- "${_Result}")
     fi
-
     _Result=$(absolute "${_Result}")
+
     echo "${_Result}"
 }
 declare -frx dirOf
 
+execute() {
+    # Execute command-with-arguments $@, wrapping it for error handling
+    requireArguments "${FUNCNAME[0]}" $# 1 -1
+
+    logDebug "Executing: $*"
+    # shellcheck disable=SC2068
+    if $@; then
+        true
+    else
+        abortOnFail $? "from: $*"
+    fi
+
+    return 0
+}
+declare -frx execute
+
+executed() {
+    # Acknowledge that script was executed, verified from arguments
+    # $1 = caller's $0
+    # $2 = caller's ${BASH_SOURCE[0]}
+    requireArguments "${FUNCNAME[0]}" $# 2
+
+    _requireToBeExecuted "$1" "$2"
+    logTrace "Executed '$2'"
+    configureShellForScripting
+
+    return 0
+}
+declare -frx executed
+
 fail() {
     # Fail, with error/exit code $1 and message $2
+    requireArguments "${FUNCNAME[0]}" $# 2
     abortOnFail "$1" "$2"
 }
 declare -frx fail
@@ -514,34 +591,28 @@ installBriteOnyx() {
 }
 declare -frx installBriteOnyx
 
-log() { >&2 printf '%s\n' "$1"; }
-declare -frx log
-
 logActivity() { logInfo "$1"; }
 declare -frx logActivity
 
-logBad() { logInfo "$1"; }
-declare -frx logBad
-
-logDebug() { log "DEBUG: $1"; }
+logDebug() { _log "DEBUG: $1"; }
 declare -frx logDebug
 
 logDone() { logInfo "$1"; }
 declare -frx logDebug
 
-logError() { log "ERROR: $1"; }
+logError() { _log "ERROR: $1"; }
 declare -frx logError
 
-logFatal() { log "FATAL: $1"; }
+logFatal() { _log "FATAL: $1"; }
 declare -frx logFatal
 
-logInfo() { log "INFO:  $1"; }
+logInfo() { _log "INFO:  $1"; }
 declare -frx logInfo
 
-logTrace() { log "TRACE: $1"; }
+logTrace() { _log "TRACE: $1"; }
 declare -frx logTrace
 
-logWarn() { log "WARN:  $1"; }
+logWarn() { _log "WARN:  $1"; }
 declare -frx logWarn
 
 maybeDisableSetLongOption() {
@@ -589,6 +660,7 @@ parentOf() {
     _Result=$(dirname -- "${_Result}")
     _Result=$(absolute "${_Result}")
 
+    # TODO: Reimplement using a name reference
     echo "${_Result}"
 }
 declare -frx parentOf
@@ -622,7 +694,7 @@ requireArguments() {
     # $1 = function name (from FUNCNAME[0])
     # $2 = actual number of arguments received by caller (from $#)
     # $3 = expected minimum number of arguments
-    # $4 = expected maximum number of arguments (optional)
+    # $4 = expected maximum number of arguments (optional, <0 for unlimited)
     if (($# < 3)) || ((4 < $#)); then
         fail 1 "'${FUNCNAME[0]}' requires 3-4 arguments instead of $#"
     fi
@@ -635,8 +707,11 @@ requireArguments() {
         local -ir _Maximum=$3
     fi
 
-    if ((${_Maximum} == 0)); then
-        # A maximum of '0' arguments means unlimited
+    [[ -v boIsDebugging ]] && {
+        logTrace "'${_Function}' received ${_Actual} of ${_Minimum} to ${_Maximum} argument(s)"
+    }
+    if ((${_Maximum} < 0)); then
+        # A maximum of less than 0 arguments means unlimited
         if ((${_Actual} < ${_Minimum})); then
             fail 1 "'${_Function}' requires at least ${_Minimum} argument(s) instead of ${_Actual}"
         fi
@@ -655,107 +730,66 @@ requireBriteOnyx() {
     requireArguments "${FUNCNAME[0]}" $# 0
 
     if [[ -v boNO ]]; then
-        logError "Found 'boNO' defined, BriteOnyx is explicitly disabled"
-        return 1
+        fail 1 "Found 'boNO' defined, BriteOnyx is explicitly disabled"
     fi
     if [[ -v boFramework ]]; then
         if [[ ! -d "${boFramework}" ]]; then
-            logError "'boFramework' does NOT reference a directory, need BriteOnyx"
-            return 1
+            fail 1 "'boFramework' does NOT reference a directory, need BriteOnyx"
         fi
     else
-        logError "Missing 'boFramework', need BriteOnyx"
-        return 1
+        fail 1 "Missing 'boFramework', need BriteOnyx"
     fi
 
     return 0
 }
 declare -frx requireBriteOnyx
 
+requireExists() {
+    # Require pathname $1
+    # $1 = pathname that is required to exist
+    requireArguments "${FUNCNAME[0]}" $# 1
+    local _Pathname=$1
+
+    _Pathname=$(absolute "${_Pathname}")
+    [[ -e "${_Pathname}" ]] || abortOnFail 1 "Missing pathname '${_Pathname}'"
+}
+declare -frx requireExists
+
+requireFile() {
+    # Require file $1
+    # $1 = pathname that is required to be a file
+    requireArguments "${FUNCNAME[0]}" $# 1
+    local _Pathname=$1
+
+    _Pathname=$(absolute "${_Pathname}")
+    requireExists "${_Pathname}"
+    [[ -f "${_Pathname}" ]] || abortOnFail 1 "Missing file '${_Pathname}'"
+}
+declare -frx requireFile
+
 requireScript() {
     # Require script $1, expecting it to be invoked via Bash 'source' command
-    # Return absolute pathname of script
-    # $1 = pathname of script about to be invoked via "source"
+    # $1 = pathname that is required to be a readable script file
     requireArguments "${FUNCNAME[0]}" $# 1
-    local _Result=$1
+    local _Pathname=$1
 
-    _Result=$(absolute "${_Result}")
-
-    if [[ -f "${_Result}" ]]; then
-        logDebug "Required script '${_Result}'"
-    else
-        fail 1 "Missing readable script '${_Result}'"
-    fi
-    printf '%s' "${_Result}"
+    _Pathname=$(absolute "${_Pathname}")
+    requireFile "${_Pathname}"
+    [[ -r "${_Pathname}" ]] || abortOnFail 1 "Unreadable file '${_Pathname}'"
 }
 declare -frx requireScript
-
-_requireToBeExecuted() {
-    # Require the calling script to be executed, NOT 'source'd
-    # $1 = name of executable (e.g., from "$0")
-    # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
-    requireArguments "${FUNCNAME[0]}" $# 2
-    local _Executable=$1
-    local _Script=$2
-
-    if [[ -z "${_Script}" ]]; then
-        logError "Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
-        return 1
-    fi
-    if [[ "${_Script}" != "${_Executable}" ]]; then
-        fail 1 "Aborting, cannot source, MUST execute script '${_Executable}'"
-    fi
-
-    return 0
-}
-declare -frx _requireToBeExecuted
-
-_requireToBeSourced() {
-    # Require the calling script to be 'source'd, NOT executed
-    # $1 = name of executable (e.g., from "$0")
-    # $2 = pathname of calling script (e.g., from "${BASH_SOURCE[0]}")
-    requireArguments "${FUNCNAME[0]}" $# 2
-    local _Executable=$1
-    local _Script=$2
-
-    if [[ "${_Executable}" != bash ]]; then
-        logDebug "Executable '$0' is NOT 'bash' in '${_Script}'"
-    fi
-    if [[ -z "${_Script}" ]]; then
-        logError "Aborting, 'BASH_SOURCE' is empty in script '${_Executable}'"
-        return 1
-    fi
-    if [[ "${_Script}" == "${_Executable}" ]]; then
-        logError "Aborting, cannot execute, MUST source script '${_Executable}'"
-        return 1
-    fi
-
-    return 0
-}
-declare -frx _requireToBeSourced
-
-executed() {
-    # Acknowledge that script was executed, verified from arguments
-    # $1 = caller's $0
-    # $2 = caller's ${BASH_SOURCE[0]}
-    requireArguments "${FUNCNAME[0]}" $# 2
-
-    _requireToBeExecuted "$1" "$2"
-    logTrace "Executed '$2'"
-    configureShellForScripting
-
-    return 0
-}
-declare -frx executed
 
 sourced() {
     # Acknowledge that script was sourced, verified from arguments
     # $1 = caller's $0
     # $2 = caller's ${BASH_SOURCE[0]}
     requireArguments "${FUNCNAME[0]}" $# 2
+    local -r _Executable=$1
+    local _Script=$2
 
-    _requireToBeSourced "$1" "$2"
-    logTrace "Sourced '$2'"
+    _Script=$(absolute "${_Script}")
+    _requireToBeSourced "${_Executable}" "${_Script}"
+    logTrace "Sourced '${_Script}'"
     configureShellForScripting
 
     return 0
@@ -765,16 +799,18 @@ declare -frx sourced
 sourceRequiredScript() {
     # Bash 'source' required script $1
     # $1 = script pathname
-    requireArguments "${FUNCNAME[0]}" $# 1 0
+    requireArguments "${FUNCNAME[0]}" $# 1 -1
     local _Script=$1
-
     shift 1
-    _Script=$(requireScript "${_Script}")
+
+    _Script=$(absolute "${_Script}")
+    requireScript "${_Script}"
     logTrace "Sourcing script '${_Script}'"
     source "${_Script}" "$@"
 }
 declare -frx sourceRequiredScript
 
+###################################################################################################
 # Invoke some essential functions, before returning to caller, so they do not have to do so
 sourced "$0" "${BASH_SOURCE[0]}"
 assembleAll

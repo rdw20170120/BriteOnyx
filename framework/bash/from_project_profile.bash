@@ -4,7 +4,6 @@
 
 sourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
-
 logActivity 'Activating this project for this Bash session'
 
 declare -grx boProjectHome

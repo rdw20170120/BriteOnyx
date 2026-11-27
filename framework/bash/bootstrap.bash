@@ -42,8 +42,7 @@ import() {
         _checkForLibrary "${boFrameworkLib}" "${_Name}".bash ||
         _checkForLibrary "${boFrameworkLib}/${_Name}" "ALL.bash" ||
         {
-            logError "Could not find a framework library for '${_Name}'"
-            return 1
+            fail 1 "Could not find a framework library for '${_Name}'"
         }
     sourceRequiredScript "${_Script}"
 }

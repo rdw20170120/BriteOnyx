@@ -4,7 +4,6 @@
 
 sourced "$0" "${BASH_SOURCE[0]}"
 requireBriteOnyx
-
 logActivity 'Activating this account for this Bash session'
 
 # shellcheck disable=SC2154
